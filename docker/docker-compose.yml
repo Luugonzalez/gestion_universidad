@@ -1,0 +1,19 @@
+services:
+    estructura:
+        image: flask-sysacad:v1.0.0
+        networks:
+          - mired
+        ports:
+          - 5000:5000
+        environment:
+          - FLASK_CONTEXT=${FLASK_CONTEXT}
+          - SQLALCHEMY_TRACK_MODIFICATIONS=${SQLALCHEMY_TRACK_MODIFICATIONS}  
+          - SQLALCHEMY_RECORD_QUERIES=${SQLALCHEMY_RECORD_QUERIES}
+          - PROD_DATABASE_URI=${PROD_DATABASE_URI}
+          - HASHIDS_MIN_LENGTH=${HASHIDS_MIN_LENGTH}
+          - HASHIDS_ALPHABET=${HASHIDS_ALPHABET}
+          - HASHIDS_SALT=${HASHIDS_SALT}
+          - SECRET_KEY=${SECRET_KEY}
+networks:
+    mired:
+        external: true
