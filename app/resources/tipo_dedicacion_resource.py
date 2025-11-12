@@ -7,8 +7,8 @@ tipo_dedicacion_bp = Blueprint('tipo_dedicacion', __name__)
 tipo_dedicacion_mapping = Tipo_dedicacionMapping()
 
 @tipo_dedicacion_bp.route('/tipo_dedicacion/<hashid:id>', methods=['GET']) 
-def buscar_por_id(id):
-    tipo_dedicacion =TipoDedicacionService.buscar_por_id(id)
+def buscar_por_hashid(id):
+    tipo_dedicacion =TipoDedicacionService.buscar_por_hashid(id)
     return tipo_dedicacion_mapping.dump(tipo_dedicacion), 200
 
 @tipo_dedicacion_bp.route('/tipo_dedicacion', methods=['GET'])
@@ -25,13 +25,13 @@ def crear():
 
 @tipo_dedicacion_bp.route('/tipo_dedicacion/<hashid:id>', methods=['PUT']) 
 def actualizar(id):
-    tipo_dedicacion = tipo_dedicacion_mapping.load(request.get_json()) 
+    tipo_dedicacion_mapping.load(request.get_json()) 
     TipoDedicacionService.actualizar_tipo_dedicacion, id
     return jsonify("tipo_dedicacion actualizada exitosamente"), 200 
 
 @tipo_dedicacion_bp.route('/tipo_dedicacion/<hashid:id>', methods=['DELETE'])
-def borrar_por_id(id):
-    tipo_dedicacion = TipoDedicacionService.borrar_tipo_dedicacion(id)
+def borrar_por_hashid(id):
+    TipoDedicacionService.borrar_tipo_dedicacion(id)
     return jsonify("tipo_dedicacion borrada exitosamente"), 200 
 
 def sanitizar_tipo_dedicacion_entrada(request):

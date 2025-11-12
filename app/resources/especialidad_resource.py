@@ -6,8 +6,8 @@ from markupsafe import escape
 especialidad_bp = Blueprint('especialidad', __name__)
 especialidad_mapping = EspecialidadMapping()    
 
-@ especialidad_bp.route('/especialidad/<int:id>', methods=['GET'])
-def buscar_por_id(id):
+@ especialidad_bp.route('/especialidad/<hashid:id>', methods=['GET'])
+def buscar_por_hashid(id):
     especialidad = EspecialidadService.buscar_especialidad(id)
     return especialidad_mapping.dump(especialidad), 200 
 
@@ -17,14 +17,14 @@ def crear():
     EspecialidadService.crear_especialidad(especialidad)
     return jsonify("Especialidad creada exitosamente"), 201
 
-@especialidad_bp.route('/especialidad/<int:id>', methods=['PUT'])
+@especialidad_bp.route('/especialidad/<hashid:id>', methods=['PUT'])
 def actualizar(id):
     especialidad = especialidad_mapping.load(request.get_json())
     EspecialidadService.actualizar_especialidad(especialidad, id)
     return jsonify("Especialidad actualizada exitosamente"), 200        
 
-@especialidad_bp.route('/especialidad/<int:id>', methods=['DELETE'])
-def borrar_por_id(id):
+@especialidad_bp.route('/especialidad/<hashid:id>', methods=['DELETE'])
+def borrar_por_hashid(id):
     EspecialidadService.eliminar_especialidad(id)
     return jsonify("Especialidad borrada exitosamente"), 200    
 

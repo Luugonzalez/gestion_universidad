@@ -12,8 +12,8 @@ def buscar_todos():
     return cargo_mapping.dump(cargos, many=True), 200 
 
 @cargo_bp.route('/cargo/<hashid:id>', methods=['GET']) 
-def buscar_por_id(id):
-    cargo = CargoService.buscar_por_id(id)
+def buscar_por_hashid(id):
+    cargo = CargoService.buscar_por_hashid(id)
     return cargo_mapping.dump(cargo), 200
 
 @cargo_bp.route('/cargo', methods=['POST']) 

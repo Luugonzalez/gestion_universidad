@@ -7,8 +7,8 @@ materia_bp = Blueprint('materia', __name__)
 materia_mapping = MateriaMapping()
 
 @materia_bp.route('/materia/<hashid:id>', methods=['GET'])
-def buscar_por_id(id):
-    materia = MateriaService.buscar_por_id(id)
+def buscar_por_hashid(id):
+    materia = MateriaService.buscar_por_hashid(id)
     return materia_mapping.dump(materia), 200
 
 @materia_bp.route('/materia', methods=['GET'])
@@ -30,7 +30,7 @@ def actualizar(id):
     return jsonify("Materia actualizada exitosamente"), 200
 
 @materia_bp.route('/materia/<hashid:id>', methods=['DELETE'])
-def borrar_por_id(id):
+def borrar_por_hashid(id):
     MateriaService.borrar_materia(id)
     return jsonify("Materia borrada exitosamente"), 200
 

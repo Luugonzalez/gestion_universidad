@@ -21,8 +21,8 @@ def buscar_todas_las_materias():
     return plan_materia_mapping.dump(materias, many=True), 200
 
 @plan_bp.route('/plan/<hashid:id>', methods=['GET']) 
-def buscar_por_id(id):
-    plan = PlanService.buscar_por_id(id)
+def buscar_por_hashid(id):
+    plan = PlanService.buscar_por_hashid(id)
     return plan_mapping.dump(plan), 200
 
 @plan_bp.route('/plan', methods=['POST']) 
@@ -32,15 +32,17 @@ def crear():
     PlanService.crear(plan)
     return jsonify("Plan creado exitosamente"), 201 
 
+
+
 @plan_bp.route('/plan/<hashid:id>/materias', methods=['POST'])
-def agregar_materias(id):
+def agregar_materias(hashid):
     try:
         data = bulk_mapping.load(request.get_json() or {})
         pms = data["materias"]  # lista de PlanMateria
     except ValidationError as e:
         return jsonify({"errors": e.messages}), 400
 
-    PlanService.agregar_materias(id, pms)
+    PlanService.agregar_materias(hashid, pms)
     return jsonify({"message": "Materias agregadas exitosamente"}), 201
 
 @plan_bp.route('/plan/<hashid:id>', methods=['PUT'])  
@@ -53,8 +55,8 @@ def actualizar(id):
     return jsonify("Plan actualizado exitosamente"), 200
 
 @plan_bp.route('/plan/<hashid:id>', methods=['DELETE'])
-def borrar_por_id(id):
-    plan = PlanService.borrar_por_id(id)
+def borrar_por_hashid(id):
+    plan = PlanService.borrar_por_hashid(id)
     if plan is None:
         return jsonify("Plan no encontrado"), 404
     return jsonify("Plan borrado exitosamente"), 200
