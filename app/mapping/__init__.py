@@ -7,3 +7,4 @@ from .categoria_cargo_mapping import CategoriaCargoMapping
 from .plan_mapping import PlanMapping
 from .plan_materia_mapping import PlanMateriaMapping
 from .plan_materia_bulk import BulkMateriasMapping
+from .area_mapping import AreaMapping
