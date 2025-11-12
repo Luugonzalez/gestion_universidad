@@ -1,6 +1,6 @@
 services:
     estructura:
-        image: flask-sysacad:v1.0.0
+        image: gestion_academica
         networks:
           - mired
         ports:
