@@ -9,7 +9,7 @@ grado_bp = Blueprint('grado', __name__)
 grado_mapping = GradoMapping()
 
 @grado_bp.route('/grado/<hashid:id>', methods=['GET'])
-def buscar_por_id(id):
+def buscar_por_hashid(id):
     grado = GradoService.buscar_grado(id)
     return grado_mapping.dump(grado), 200
 
@@ -33,7 +33,7 @@ def actualizar(id):
     return jsonify("Grado actualizado exitosamente"), 200
 
 @grado_bp.route('/grado/<hashid:id>', methods=['DELETE'])
-def borrar_por_id(id):
+def borrar_por_hashid(id):
     GradoService.eliminar_grado(id)
     return jsonify("Grado borrado exitosamente"), 200
 
