@@ -40,6 +40,13 @@ services:
       - SECRET_KEY=${SECRET_KEY}
     env_file:
       - .env
+    
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`backend.universidad.localhost`)"
+      - "traefik.http.routers.backend.tls=true"
+      - "traefik.http.services.backend.loadbalancer.server.port=5000"
+      - "traefik.docker.network=mired"
 
 networks:
   mired:
