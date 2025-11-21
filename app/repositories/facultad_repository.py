@@ -1,7 +1,7 @@
 from app.models import Facultad
 from app import db
 from sqlalchemy_filters import apply_filters
-from typing import Optional
+from typing import Optional
 
 class FacultadRepository:
 
