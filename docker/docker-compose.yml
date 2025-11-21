@@ -1,19 +1,55 @@
 services:
-    estructura:
-        image: gestion_academica
-        networks:
-          - mired
-        ports:
-          - 5000:5000
-        environment:
-          - FLASK_CONTEXT=${FLASK_CONTEXT}
-          - SQLALCHEMY_TRACK_MODIFICATIONS=${SQLALCHEMY_TRACK_MODIFICATIONS}  
-          - SQLALCHEMY_RECORD_QUERIES=${SQLALCHEMY_RECORD_QUERIES}
-          - PROD_DATABASE_URI=${PROD_DATABASE_URI}
-          - HASHIDS_MIN_LENGTH=${HASHIDS_MIN_LENGTH}
-          - HASHIDS_ALPHABET=${HASHIDS_ALPHABET}
-          - HASHIDS_SALT=${HASHIDS_SALT}
-          - SECRET_KEY=${SECRET_KEY}
+  estructura:
+    image: gestion_academica
+    networks:
+      - mired
+    ports:
+      - 5000:5000
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: redis_gestion
+    restart: always
+    ports:
+      - "6380:6379"
+    networks:
+      - mired
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Aplicación Flask
+  estructura:
+    image: gestion_academica
+    container_name: app_gestion
+    restart: always
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - mired
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_CONTEXT=${FLASK_CONTEXT}
+      - SQLALCHEMY_TRACK_MODIFICATIONS=${SQLALCHEMY_TRACK_MODIFICATIONS}
+      - SQLALCHEMY_RECORD_QUERIES=${SQLALCHEMY_RECORD_QUERIES}
+      - PROD_DATABASE_URI=${PROD_DATABASE_URI}
+      - HASHIDS_MIN_LENGTH=${HASHIDS_MIN_LENGTH}
+      - HASHIDS_ALPHABET=${HASHIDS_ALPHABET}
+      - HASHIDS_SALT=${HASHIDS_SALT}
+      - SECRET_KEY=${SECRET_KEY}
 networks:
-    mired:
-        external: true
+  mired:
+    external: true
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_DB=${REDIS_DB}
+    env_file:
+      - .env
+
+networks:
+  mired:
+    external: true
