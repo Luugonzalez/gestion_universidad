@@ -1,10 +1,16 @@
 from app.models import Especialidad
 from app import db
+from sqlalchemy_filters import apply_filters
+from typing import Optional
 
 class EspecialidadRepository:
     @staticmethod
-    def listar_especialidades():
-        return db.session.query(Especialidad).all()
+    def listar_especialidades(page: int, per_page: int, filters: Optional[list] = None):
+        query = db.session.query(Especialidad)
+        if filters and isinstance(filters, list):
+            query = apply_filters(query, filters)
+        paginated_query = query.offset((page - 1) * per_page).limit(per_page)
+        return paginated_query.all()
 
     @staticmethod
     def crear_especialidad(especialidad: Especialidad):

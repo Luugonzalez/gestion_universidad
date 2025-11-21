@@ -1,6 +1,7 @@
 from app.models import Facultad
 from app import db
-
+from sqlalchemy_filters import apply_filters
+from typing import Optional
 
 class FacultadRepository:
 
@@ -11,8 +12,12 @@ class FacultadRepository:
     return facultad
   
   @staticmethod
-  def listar_facultades() -> list[Facultad]:
-    return db.session.query(Facultad).all()
+  def listar_facultades(page: int, per_page: int, filters: Optional[list] = None) -> list[Facultad]:
+    query = db.session.query(Facultad)
+    if filters and isinstance(filters, list):
+        query = apply_filters(query, filters)
+    paginated_query = query.offset((page - 1) * per_page).limit(per_page)
+    return paginated_query.all()
   
   @staticmethod
   def buscar_facultad(id: int) -> Facultad:
