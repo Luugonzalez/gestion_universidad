@@ -1,4 +1,10 @@
 services:
+  estructura:
+    image: gestion_academica
+    networks:
+      - mired
+    ports:
+      - 5000:5000
   # Redis Cache
   redis:
     image: redis:7-alpine
@@ -35,6 +41,9 @@ services:
       - HASHIDS_ALPHABET=${HASHIDS_ALPHABET}
       - HASHIDS_SALT=${HASHIDS_SALT}
       - SECRET_KEY=${SECRET_KEY}
+networks:
+  mired:
+    external: true
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
       - REDIS_DB=${REDIS_DB}
