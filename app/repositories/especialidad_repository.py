@@ -3,6 +3,10 @@ from app import db
 
 class EspecialidadRepository:
     @staticmethod
+    def listar_especialidades():
+        return db.session.query(Especialidad).all()
+
+    @staticmethod
     def crear_especialidad(especialidad: Especialidad):
         db.session.add(especialidad)
         db.session.commit()

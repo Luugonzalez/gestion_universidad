@@ -6,7 +6,12 @@ from markupsafe import escape
 especialidad_bp = Blueprint('especialidad', __name__)
 especialidad_mapping = EspecialidadMapping()    
 
-@ especialidad_bp.route('/especialidad/<hashid:id>', methods=['GET'])
+@especialidad_bp.route('/especialidad', methods=['GET'])
+def listar_especialidades():
+    especialidades = EspecialidadService.listar_especialidades()
+    return especialidad_mapping.dump(especialidades, many=True), 200
+
+@especialidad_bp.route('/especialidad/<hashid:id>', methods=['GET'])
 def buscar_por_hashid(id):
     especialidad = EspecialidadService.buscar_especialidad(id)
     return especialidad_mapping.dump(especialidad), 200 

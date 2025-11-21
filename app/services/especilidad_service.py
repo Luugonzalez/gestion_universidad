@@ -4,6 +4,10 @@ from app.repositories import EspecialidadRepository
 class EspecialidadService:
 
     @staticmethod
+    def listar_especialidades():
+        return EspecialidadRepository.listar_especialidades()
+
+    @staticmethod
     def crear_especialidad(especialidad: Especialidad):
         EspecialidadRepository.crear_especialidad(especialidad)
         return especialidad

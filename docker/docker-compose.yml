@@ -1,10 +1,4 @@
 services:
-  estructura:
-    image: gestion_academica
-    networks:
-      - mired
-    ports:
-      - 5000:5000
   # Redis Cache
   redis:
     image: redis:7-alpine
@@ -37,16 +31,13 @@ services:
       - SQLALCHEMY_TRACK_MODIFICATIONS=${SQLALCHEMY_TRACK_MODIFICATIONS}
       - SQLALCHEMY_RECORD_QUERIES=${SQLALCHEMY_RECORD_QUERIES}
       - PROD_DATABASE_URI=${PROD_DATABASE_URI}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_DB=${REDIS_DB}
       - HASHIDS_MIN_LENGTH=${HASHIDS_MIN_LENGTH}
       - HASHIDS_ALPHABET=${HASHIDS_ALPHABET}
       - HASHIDS_SALT=${HASHIDS_SALT}
       - SECRET_KEY=${SECRET_KEY}
-networks:
-  mired:
-    external: true
-      - REDIS_HOST=${REDIS_HOST}
-      - REDIS_PORT=${REDIS_PORT}
-      - REDIS_DB=${REDIS_DB}
     env_file:
       - .env
 
