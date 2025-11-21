@@ -1,5 +1,8 @@
 from app.models import Facultad
 from app.repositories import FacultadRepository
+from typing import Optional
+import logging
+
 class FacultadService:
 
   @staticmethod
@@ -8,20 +11,25 @@ class FacultadService:
     return facultad
   
   @staticmethod
-  def listar_facultades():
-    facultades= FacultadRepository.listar_facultades()
+  def listar_facultades(page: int = 1, per_page: int = 10, filters: Optional[list] = None):
+    logging.info("page: {}, per_page: {}, filters: {}".format(page, per_page, filters))
+    facultades = FacultadRepository.listar_facultades(page, per_page, filters)
     return facultades
 
+  @staticmethod
   def buscar_facultad(id: int):
     facultad = FacultadRepository.buscar_facultad(id)
     return facultad
     
+  @staticmethod
   def actualizar_facultad(facultad: Facultad, id: int):
     FacultadRepository.actualizar_facultad(facultad, id)
     return facultad
   
+  @staticmethod
   def eliminar_facultad(id: int):
     facultad = FacultadRepository.eliminar_facultad(id)
+    return facultad
     
     
     
