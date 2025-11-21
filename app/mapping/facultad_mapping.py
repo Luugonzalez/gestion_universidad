@@ -4,7 +4,7 @@ from markupsafe import escape
 
 
 class FacultadMapping(Schema):
-    id = fields.Int(dump_only=True)
+    hashids = fields.String(attribute="hashid", dump_only=True)
     nombre = fields.String(required=True, validate = validate.Length(min=1, max=100)) #max de la base de datos
     sigla = fields.String(required=True, validate = validate.Length(min=1, max=10))
     codigoPostal = fields.String(required=True, validate = validate.Length(min=1, max=100))

@@ -13,8 +13,8 @@ def buscar_todos():
     return grupo_mapping.dump(grupos, many=True), 200
 
 @grupo_bp.route('/grupo/<hashid:id>', methods=['GET'])
-def buscar_por_id(id):
-    grupo = GrupoService.buscar_grupo_por_id(id)
+def buscar_por_hashid(id):
+    grupo = GrupoService.buscar_grupo_por_hashid(id)
     return grupo_mapping.dump(grupo), 200
 
 @grupo_bp.route('/grupo', methods=['POST'])
@@ -32,7 +32,7 @@ def actualizar(id):
     return jsonify("Grupo actualizado exitosamente"), 200   
 
 @grupo_bp.route('/grupo/<hashid:id>', methods=['DELETE'])
-def borrar_por_id(id):
+def borrar_por_hashid(id):
     GrupoService.eliminar_grupo(id)
     return jsonify("Grupo borrado exitosamente"), 200
 

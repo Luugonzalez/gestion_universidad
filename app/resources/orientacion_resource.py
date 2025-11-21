@@ -9,7 +9,7 @@ orientacion_bp = Blueprint('orientacion', __name__)
 orientacion_mapping = OrientacionMapping()
 
 @orientacion_bp.route('/orientacion/<hashid:id>', methods=['GET'])
-def buscar_por_id(id):
+def buscar_por_hashid(id):
     orientacion = OrientacionService.buscar_orientacion(id)
     return orientacion_mapping.dump(orientacion), 200
 
@@ -33,7 +33,7 @@ def actualizar(id):
     return jsonify("Orientación actualizada exitosamente"), 200 
 
 @orientacion_bp.route('/orientacion/<hashid:id>', methods=['DELETE'])
-def borrar_por_id(id):
+def borrar_por_hashid(id):
     OrientacionService.eliminar_orientacion(id)
     return jsonify("Orientación borrada exitosamente"), 200
 

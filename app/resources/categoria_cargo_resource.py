@@ -12,8 +12,8 @@ def buscar_todas():
     return categoria_cargo_mapping.dump(categorias, many=True), 200
 
 @categoria_cargo_bp.route('/categoria_cargo/<hashid:id>', methods=['GET'])
-def buscar_por_id(id):
-    categoria = CategoriaCargoService.buscar_por_id(id)
+def buscar_por_hashid(id):
+    categoria = CategoriaCargoService.buscar_por_hashid(id)
     return categoria_cargo_mapping.dump(categoria), 200
 
 @categoria_cargo_bp.route('/categoria_cargo', methods=['POST'])

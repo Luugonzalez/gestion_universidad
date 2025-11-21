@@ -7,7 +7,7 @@ facultad_mapping = FacultadMapping()
 from app.validators import validate_with
 
 @facultad_bp.route('/facultad/<hashid:id>', methods=['GET']) #Funciona
-def buscar_por_id(id):
+def buscar_por_hashid(id):
     facultad = FacultadService.buscar_facultad(id)
     return facultad_mapping.dump(facultad), 200
 
@@ -23,7 +23,7 @@ def crear():
     FacultadService.crear_facultad(facultad)
     return jsonify("Facultad creada exitosamente"), 201 
 
-@facultad_bp.route('/facultad/<int:id>', methods=['PUT']) 
+@facultad_bp.route('/facultad/<hashid:id>', methods=['PUT']) 
 @validate_with(FacultadMapping)
 def actualizar(id):
     facultad = facultad_mapping.load(request.get_json()) 
@@ -31,7 +31,7 @@ def actualizar(id):
     return jsonify("Facultad actualizada exitosamente"), 200 
 
 @facultad_bp.route('/facultad/<hashid:id>', methods=['DELETE'])
-def borrar_por_id(id):
+def borrar_por_hashid(id):
     facultad = FacultadService.eliminar_Facultad(id)
     return jsonify("Facultad borrada exitosamente"), 200 
 

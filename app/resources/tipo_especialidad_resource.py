@@ -6,8 +6,8 @@ from markupsafe import escape
 tipo_especialidad_bp = Blueprint('tipo_especialidad', __name__)
 tipo_especialidad_mapping = TipoEspecialidadMapping()
 
-@tipo_especialidad_bp.route('/tipo_especialidad/<int:id>', methods=['GET'])
-def buscar_por_id(id):
+@tipo_especialidad_bp.route('/tipo_especialidad/<hashid:id>', methods=['GET'])
+def buscar_por_hashid(id):
     tipo_especialidad = TipoespecialidadService.buscar_tipoespecialidad(id)
     return tipo_especialidad_mapping.dump(tipo_especialidad), 200
 
@@ -17,15 +17,15 @@ def crear():
     TipoespecialidadService.crear_tipoespecialidad(tipo_especialidad)
     return jsonify("Tipo de especialidad creado exitosamente"), 201     
 
-@tipo_especialidad_bp.route('/tipo_especialidad/<int:id>', methods=['PUT'])
+@tipo_especialidad_bp.route('/tipo_especialidad/<hashid:id>', methods=['PUT'])
 def actualizar(id):
     tipo_especialidad = tipo_especialidad_mapping.load(request.get_json())
     TipoespecialidadService.actualizar_tipoespecialidad(tipo_especialidad, id)
     return jsonify("Tipo de especialidad actualizado exitosamente"), 200
 
-@tipo_especialidad_bp.route('/tipo_especialidad/<int:id>', methods=['DELETE'])
-def borrar_por_id(id):
-    tipo_especialidad = TipoespecialidadService.eliminar_tipoespecialidad(id)
+@tipo_especialidad_bp.route('/tipo_especialidad/<hashid:id>', methods=['DELETE'])
+def borrar_por_hashid(id):
+    TipoespecialidadService.eliminar_tipoespecialidad(id)
     return jsonify("Tipo de especialidad borrado exitosamente"), 200
 
 def sanitizar_tipo_especialidad_entrada(request):

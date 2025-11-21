@@ -14,7 +14,7 @@ universidad_mapping = UniversidadMapping()
 
 
 @universidad_bp.route('/universidad/<hashid:id>', methods=['GET'])
-def buscar_por_id(id):
+def buscar_por_hashid(id):
     universidad = UniversidadService.buscar_universidad(id)
     return universidad_mapping.dump(universidad), 200
 
@@ -44,8 +44,8 @@ def actualizar(universidad, id):
     return jsonify("Universidad actualizada exitosamente"), 200 
 
 @universidad_bp.route('/universidad/<hashid:id>', methods=['DELETE'])
-def borrar_por_id(id):
-    universidad = UniversidadService.eliminar_universidad(id)
+def borrar_por_hashid(id):
+    UniversidadService.eliminar_universidad(id)
     return jsonify("Universidad borrada exitosamente"), 200 
 
 

@@ -10,7 +10,7 @@ departamento_bp = Blueprint('departamento', __name__)
 departamento_mapping = DepartamentoMapping()
 
 @departamento_bp.route('/departamento/<hashid:id>', methods=['GET'])
-def buscar_por_id(id):
+def buscar_por_hashid(id):
     departamento = DepartamentoService.buscar_departamento(id)
     return departamento_mapping.dump(departamento), 200 
 
@@ -34,7 +34,7 @@ def actualizar(id):
     return jsonify("Departamento actualizado exitosamente"), 200        
 
 @departamento_bp.route('/departamento/<hashid:id>', methods=['DELETE'])
-def borrar_por_id(id):
+def borrar_por_hashid(id):
     DepartamentoService.eliminar_departamento(id)
     return jsonify("Departamento borrado exitosamente"), 200
 

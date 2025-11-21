@@ -7,8 +7,8 @@ autoridad_bp = Blueprint('autoridad', __name__)
 autoridad_mapping = AutoridadMapping()
 
 @autoridad_bp.route('/autoridad/<hashid:id>', methods=['GET']) 
-def buscar_por_id(id):
-    autoridad =AutoridadService.buscar_por_id(id)
+def buscar_por_hashid(id):
+    autoridad =AutoridadService.buscar_por_hashid(id)
     return autoridad_mapping.dump(autoridad), 200
 
 @autoridad_bp.route('/autoridad', methods=['GET'])
@@ -30,7 +30,7 @@ def actualizar(id):
     return jsonify("autoridad actualizada exitosamente"), 200 
 
 @autoridad_bp.route('/autoridad/<hashid:id>', methods=['DELETE'])
-def borrar_por_id(id):
+def borrar_por_hashid(id):
     autoridad = AutoridadService.borrar_autoridad(id)
     return jsonify("autoridad borrada exitosamente"), 200 
 
