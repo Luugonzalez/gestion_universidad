@@ -6,7 +6,8 @@ from app import db
 class Nota(db.Model):
   __tablename__ = 'notas' 
   id : int  = db.Column(db.Integer, primary_key=True, autoincrement=True)
-  alumno_id = db.Column(db.Integer, db.ForeignKey('alumnos.id'))
+  # COMENTADO TEMPORALMENTE: Falta crear el modelo Alumno
+  # alumno_id = db.Column(db.Integer, db.ForeignKey('alumnos.id'))
   autoridad_id: int = db.Column(db.Integer)
   nota: float = db.Column(db.Float)
 
