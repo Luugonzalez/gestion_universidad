@@ -1,10 +1,3 @@
 from .autoridad_mapping import AutoridadMapping
-from .materia_mapping import MateriaMapping
-from .tipo_dedicacion_mapping import Tipo_dedicacionMapping
 from .universidad_mapping import UniversidadMapping
-from .cargo_mapping import CargoMapping
-from .categoria_cargo_mapping import CategoriaCargoMapping
-from .plan_mapping import PlanMapping
-from .plan_materia_mapping import PlanMateriaMapping
-from .plan_materia_bulk import BulkMateriasMapping
-from .area_mapping import AreaMapping
+from.especialidad_mapping import EspecialidadMapping
