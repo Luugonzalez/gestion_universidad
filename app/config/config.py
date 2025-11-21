@@ -10,10 +10,10 @@ class Config(object):
     TESTING = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_RECORD_QUERIES = True
-    HASHIDS_MIN_LENGTH : str | None = os.environ.get('HASHIDS_MIN_LENGTH')
-    HASHIDS_ALPHABET : str | None = os.environ.get('HASHIDS_ALPHABET')
-    HASHIDS_SALT : str | None = os.environ.get('HASHIDS_SALT')
-    SECRET_KEY = os.environ.get('SECRET_KEY')
+    HASHIDS_MIN_LENGTH : str | None = os.environ.get('HASHIDS_MIN_LENGTH', '8')
+    HASHIDS_ALPHABET : str | None = os.environ.get('HASHIDS_ALPHABET', 'abcdefghijklmnopqrstuvwxyz1234567890')
+    HASHIDS_SALT : str | None = os.environ.get('HASHIDS_SALT', 'gestion_universidad_salt')
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 
     @staticmethod
     def init_app(app) -> None:
@@ -23,7 +23,7 @@ class TestConfig(Config):
     TESTING = True
     DEBUG = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URI')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
     
 class DevelopmentConfig(Config):
     TESTING = True
