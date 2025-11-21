@@ -1,3 +1,3 @@
-from .autoridad_mapping import AutoridadMapping
 from .universidad_mapping import UniversidadMapping
-from.especialidad_mapping import EspecialidadMapping
+from .facultad_mapping import FacultadMapping
+from .especialidad_mapping import EspecialidadMapping

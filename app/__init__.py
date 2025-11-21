@@ -32,24 +32,12 @@ def create_app() -> Flask:
     ma.init_app(app)
     #jwt.init_app(app)
 
-    from app.resources import home, universidad_bp, cargo_bp, categoria_cargo_bp, especialidad_bp, tipo_especialidad_bp, grupo_bp, materia_bp, tipo_dedicacion_bp, autoridad_bp, departamento_bp, grado_bp, orientacion_bp, plan_bp, facultad_bp, area_bp
+    from app.resources import home, universidad_bp, facultad_bp, especialidad_bp
     
     app.register_blueprint(home, url_prefix="/api/v1")
     app.register_blueprint(universidad_bp, url_prefix="/api/v1")
-    app.register_blueprint(cargo_bp, url_prefix="/api/v1")
-    app.register_blueprint(categoria_cargo_bp, url_prefix="/api/v1")
-    app.register_blueprint(especialidad_bp, url_prefix="/api/v1")
-    app.register_blueprint(tipo_especialidad_bp, url_prefix="/api/v1")  
-    app.register_blueprint(grupo_bp, url_prefix="/api/v1")
     app.register_blueprint(facultad_bp, url_prefix="/api/v1")
-    app.register_blueprint(materia_bp, url_prefix="/api/v1")
-    app.register_blueprint(tipo_dedicacion_bp, url_prefix="/api/v1")
-    app.register_blueprint(autoridad_bp, url_prefix="/api/v1")
-    app.register_blueprint(departamento_bp, url_prefix="/api/v1")
-    app.register_blueprint(grado_bp, url_prefix="/api/v1")
-    app.register_blueprint(orientacion_bp, url_prefix="/api/v1")
-    app.register_blueprint(plan_bp, url_prefix="/api/v1")
-    app.register_blueprint(area_bp, url_prefix="/api/v1")
+    app.register_blueprint(especialidad_bp, url_prefix="/api/v1")
 
 
     @app.shell_context_processor    
