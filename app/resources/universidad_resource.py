@@ -10,7 +10,6 @@ from app.validators import validate_with
 universidad_bp = Blueprint('universidad', __name__)
 
 universidad_mapping = UniversidadMapping()
-#from app.validators import validate_with
 
 
 @universidad_bp.route('/universidad/<hashid:id>', methods=['GET'])
