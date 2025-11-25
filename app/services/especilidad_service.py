@@ -1,11 +1,13 @@
 from app.models import Especialidad
 from app.repositories import EspecialidadRepository
+from typing import Optional
+import logging
 
 class EspecialidadService:
-
     @staticmethod
-    def listar_especialidades():
-        return EspecialidadRepository.listar_especialidades()
+    def listar_especialidades(page: int = 1, per_page: int = 10, filters: Optional[list] = None):
+        logging.info("page: {}, per_page: {}, filters: {}".format(page, per_page, filters))
+        return EspecialidadRepository.listar_especialidades(page, per_page, filters)
 
     @staticmethod
     def crear_especialidad(especialidad: Especialidad):

@@ -40,6 +40,18 @@ services:
       - SECRET_KEY=${SECRET_KEY}
     env_file:
       - .env
+    
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`backend.universidad.localhost`)"
+      - "traefik.http.routers.backend.tls=true"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.services.backend.loadbalancer.server.port=5000"
+      - "traefik.docker.network=mired"
+      # Retry middleware
+      - "traefik.http.middlewares.backend-retry.retry.attempts=3"
+      - "traefik.http.middlewares.backend-retry.retry.initialinterval=100ms"
+      - "traefik.http.routers.backend.middlewares=backend-retry"
 
 networks:
   mired:

@@ -2,9 +2,12 @@ from flask import jsonify, Blueprint, request
 from app.mapping.facultad_mapping import FacultadMapping
 from app.services.facultad_service import FacultadService
 from markupsafe import escape
+from app.validators import validate_with
+import json
+import logging
+
 facultad_bp = Blueprint('facultad', __name__)
 facultad_mapping = FacultadMapping()
-from app.validators import validate_with
 
 @facultad_bp.route('/facultad/<hashid:id>', methods=['GET']) #Funciona
 def buscar_por_hashid(id):
@@ -13,7 +16,15 @@ def buscar_por_hashid(id):
 
 @facultad_bp.route('/facultad', methods=['GET'])
 def listar_facultades():
-    facultades = FacultadService.listar_facultades()
+    page: int = request.headers.get('X-page', 1, type=int)
+    per_page: int = request.headers.get('X-per-page', 10, type=int) 
+    filters_str : str|None = request.headers.get('X-filters', None, type=str) 
+    logging.info("page: {}, per_page: {}, filters: {}".format(page, per_page, filters_str))
+    if filters_str:
+        filters = json.loads(filters_str)
+        facultades = FacultadService.listar_facultades(page=page, per_page=per_page, filters=filters)
+    else:
+        facultades = FacultadService.listar_facultades(page=page, per_page=per_page)
     return facultad_mapping.dump(facultades, many=True), 200
 
 @facultad_bp.route('/facultad', methods=['POST']) 
