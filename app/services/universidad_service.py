@@ -15,17 +15,6 @@ class UniversidadService:
         """
         Lista universidades, aplica paginación, y devuelve los metadatos asociados.
 
-  def buscar_universidad(id: int):
-    logging.info(f"Buscando universidad con id {id}")
-    universidad = UniversidadRepository.buscar_universidad(id)
-    return universidad
-    
-  def actualizar_universidad(universidad: Universidad, id: int):
-    UniversidadRepository.actualizar_universidad(universidad, id)
-    return universidad
-  
-  def eliminar_universidad(id: int):
-    universidad= UniversidadRepository.eliminar_universidad(id)
         Args:
             page: Número de página (base 1).
             per_page: Cantidad de elementos por página.
