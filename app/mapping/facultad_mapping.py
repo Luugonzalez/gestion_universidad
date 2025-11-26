@@ -16,6 +16,8 @@ class FacultadMapping(Schema):
     abreviatura = fields.String(required=True, validate = validate.Length(min=1, max=100))
     directorio = fields.String(required=True, validate = validate.Length(min=1, max=100)) 
 
+    universidad_id = fields.Integer(required=True)
+    
     @post_load
     def nueva_facultad(self, data, **kwargs):
         for key in ['nombre', 'sigla', 'codigoPostal', 'ciudad', 'domicilio', 'telefono', 'contacto', 'email', 'abreviatura', 'directorio']:
