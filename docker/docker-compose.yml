@@ -1,27 +1,10 @@
 services:
-  # Redis Cache
-  redis:
-    image: redis:7-alpine
-    container_name: redis_gestion
-    restart: always
-    ports:
-      - "6380:6379"
-    networks:
-      - mired
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   # Aplicación Flask
   estructura:
     image: gestion_academica
     container_name: app_gestion
     restart: always
-    depends_on:
-      redis:
-        condition: service_healthy
+
     networks:
       - mired
     ports:
@@ -34,13 +17,14 @@ services:
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
       - REDIS_DB=${REDIS_DB}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
       - HASHIDS_MIN_LENGTH=${HASHIDS_MIN_LENGTH}
       - HASHIDS_ALPHABET=${HASHIDS_ALPHABET}
       - HASHIDS_SALT=${HASHIDS_SALT}
       - SECRET_KEY=${SECRET_KEY}
     env_file:
       - .env
-    
+
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`backend.universidad.localhost`)"
