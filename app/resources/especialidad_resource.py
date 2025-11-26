@@ -1,6 +1,7 @@
 from flask import jsonify, Blueprint, request
 from app.mapping.especialidad_mapping import EspecialidadMapping            
 from app.services.especilidad_service import EspecialidadService
+from app.models.especialidad import Especialidad
 from markupsafe import escape
 import json
 import logging
@@ -29,13 +30,15 @@ def buscar_por_hashid(id):
 @especialidad_bp.route('/especialidad', methods=['POST'])
 def crear():
     especialidad = especialidad_mapping.load(request.get_json())
+    especialidad = sanitizar_especialidad_entrada(especialidad)
     EspecialidadService.crear_especialidad(especialidad)
     return jsonify("Especialidad creada exitosamente"), 201
 
 @especialidad_bp.route('/especialidad/<hashid:id>', methods=['PUT'])
 def actualizar(id):
     especialidad = especialidad_mapping.load(request.get_json())
-    EspecialidadService.actualizar_especialidad(especialidad, id)
+    especialidad = sanitizar_especialidad_entrada(especialidad)
+    EspecialidadService.actualizar_especialidad(id, especialidad)
     return jsonify("Especialidad actualizada exitosamente"), 200        
 
 @especialidad_bp.route('/especialidad/<hashid:id>', methods=['DELETE'])
@@ -43,11 +46,11 @@ def borrar_por_hashid(id):
     EspecialidadService.eliminar_especialidad(id)
     return jsonify("Especialidad borrada exitosamente"), 200    
 
-def sanitizar_especialidad_entrada(request):
-    especialidad = especialidad_mapping.load(request.get_json())
+def sanitizar_especialidad_entrada(especialidad: Especialidad):
     especialidad.nombre = escape(especialidad.nombre)
     especialidad.letra = escape(especialidad.letra)
     especialidad.observacion = escape(especialidad.observacion)
+    return especialidad
     return especialidad 
 
 
