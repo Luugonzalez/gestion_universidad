@@ -2,6 +2,7 @@ from app.models import Universidad
 from app.repositories import UniversidadRepository
 from typing import Optional, List, Dict, Any
 import math
+import logging
 
 class UniversidadService:
 
@@ -41,6 +42,7 @@ class UniversidadService:
 
     @staticmethod
     def buscar_universidad(universidad_id: int) -> Optional[Universidad]:
+        logging.info(f"Buscando universidad con id {universidad_id}")
         return UniversidadRepository.buscar_universidad(universidad_id)
 
     @staticmethod
