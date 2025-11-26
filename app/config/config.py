@@ -14,6 +14,12 @@ class Config(object):
     HASHIDS_ALPHABET : str | None = os.environ.get('HASHIDS_ALPHABET', 'abcdefghijklmnopqrstuvwxyz1234567890')
     HASHIDS_SALT : str | None = os.environ.get('HASHIDS_SALT', 'gestion_universidad_salt')
     SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+    CACHE_TYPE = "RedisCache"
+    CACHE_REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+    CACHE_REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
+    CACHE_REDIS_DB = int(os.getenv("REDIS_DB", 0))
+    CACHE_REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", None)
+    CACHE_DEFAULT_TIMEOUT = 300
 
     @staticmethod
     def init_app(app) -> None:

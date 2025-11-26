@@ -16,6 +16,7 @@ class UniversidadService:
     return universidades
 
   def buscar_universidad(id: int):
+    logging.info(f"Buscando universidad con id {id}")
     universidad = UniversidadRepository.buscar_universidad(id)
     return universidad
     

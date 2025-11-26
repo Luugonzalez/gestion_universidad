@@ -6,11 +6,13 @@ from app.config import config
 from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
 from flask_hashids import Hashids
+from flask_caching import Cache
 
 db = SQLAlchemy()
 migrate = Migrate()
 ma = Marshmallow()
 hashids = Hashids()
+cache = Cache()
 
 
 def create_app() -> Flask:
@@ -30,6 +32,7 @@ def create_app() -> Flask:
     migrate.init_app(app, db)
     hashids.init_app(app)
     ma.init_app(app)
+    cache.init_app(app)
     #jwt.init_app(app)
 
     from app.resources import home, universidad_bp, facultad_bp, especialidad_bp

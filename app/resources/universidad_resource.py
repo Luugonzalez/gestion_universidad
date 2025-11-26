@@ -5,6 +5,7 @@ from markupsafe import escape
 import json
 import logging
 from app.validators import validate_with
+from app import cache
 
 
 universidad_bp = Blueprint('universidad', __name__)
@@ -13,6 +14,7 @@ universidad_mapping = UniversidadMapping()
 
 
 @universidad_bp.route('/universidad/<hashid:id>', methods=['GET'])
+@cache.cached(timeout=60)
 def buscar_por_hashid(id):
     universidad = UniversidadService.buscar_universidad(id)
     return universidad_mapping.dump(universidad), 200
@@ -54,8 +56,6 @@ def sanitizar_universidad_entrada(request):
   universidad.sigla = escape(universidad.sigla)
   universidad.tipo = escape(universidad.tipo) 
   return universidad
-
-
 
 
 
