@@ -7,11 +7,27 @@ import logging
 from app.validators import validate_with
 from app import cache
 
+from typing import Dict, Any, List
 
 universidad_bp = Blueprint('universidad', __name__)
 
 universidad_mapping = UniversidadMapping()
 
+def format_filters_for_sqlalchemy(filters_dict: Dict[str, Any]) -> List:
+    """
+    Convierte un diccionario simple (desde el header X-filters) 
+    al formato de lista de diccionarios que espera sqlalchemy-filters.
+    Por defecto, usa la operación de igualdad '=='.
+    """
+    filters_list = []
+    if filters_dict:
+        for key, value in filters_dict.items():
+            filters_list.append({
+                "field": key,
+                "op": "==", 
+                "value": value
+            })
+    return filters_list
 
 @universidad_bp.route('/universidad/<hashid:id>', methods=['GET'])
 @cache.cached(timeout=60)
@@ -19,18 +35,42 @@ def buscar_por_hashid(id):
     universidad = UniversidadService.buscar_universidad(id)
     return universidad_mapping.dump(universidad), 200
 
+
 @universidad_bp.route('/universidad', methods=['GET'])
 def listar_universidades():
     page: int = request.headers.get('X-page', 1, type=int)
     per_page: int = request.headers.get('X-per-page', 10, type=int) 
     filters_str : str|None = request.headers.get('X-filters', None, type=str) 
-    logging.info("page: {}, per_page: {}, filters: {}".format(page, per_page, filters_str))
+    
+    filters = []
     if filters_str:
-        filters = json.loads(filters_str)
-        universidades = UniversidadService.listar_universidades(page=page, per_page=per_page, filters=filters)
-    else:
-        universidades = UniversidadService.listar_universidades(page=page, per_page=per_page)
-    return universidad_mapping.dump(universidades, many=True), 200
+        try:
+            filters_dict = json.loads(filters_str)
+            # 1. Aplicamos el formateo antes de pasar el filtro al servicio/repositorio
+            filters = format_filters_for_sqlalchemy(filters_dict)
+        except json.JSONDecodeError as e:
+            logging.error(f"Error al decodificar X-filters: {e}")
+            return jsonify({"error": "Formato de filtros inválido en X-filters"}), 400
+    
+    logging.info("page: {}, per_page: {}, filters: {}".format(page, per_page, filters))
+
+    # 2. El servicio ahora devuelve un diccionario con 'content' y 'pageable'
+    pagination_data = UniversidadService.listar_universidades(page=page, per_page=per_page, filters=filters)
+    
+    # 3. Serializar solo el contenido y construir la respuesta completa
+    content = universidad_mapping.dump(pagination_data['content'], many=True)
+    
+    response = {
+        "content": content,
+        "pageable": {
+            "page": pagination_data['page'],
+            "size": pagination_data['size'],
+            "total_elements": pagination_data['total_elements'],
+            "total_pages": pagination_data['total_pages']
+        }
+    }
+    
+    return jsonify(response), 200
 
 @universidad_bp.route('/universidad', methods=['POST']) 
 @validate_with(UniversidadMapping)
