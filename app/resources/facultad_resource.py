@@ -29,7 +29,7 @@ def listar_facultades():
 
 @facultad_bp.route('/facultad', methods=['POST']) 
 @validate_with(FacultadMapping)
-def crear():
+def crear(facultad):
     facultad = facultad_mapping.load(request.get_json())
     FacultadService.crear_facultad(facultad)
     return jsonify("Facultad creada exitosamente"), 201 
