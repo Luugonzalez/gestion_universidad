@@ -1,6 +1,7 @@
 from app.models import Especialidad
 from app.repositories import EspecialidadRepository
-from typing import Optional
+from typing import Optional, List, Dict, Any
+import math
 import logging
 from functools import wraps
 import time
@@ -28,9 +29,22 @@ def retry(max_attempts: int = 3, delay: float = 1.0):
 class EspecialidadService:
     @staticmethod
     @retry(max_attempts=3, delay=1.0)
-    def listar_especialidades(page: int = 1, per_page: int = 10, filters: Optional[list] = None):
-        logging.info("page: {}, per_page: {}, filters: {}".format(page, per_page, filters))
-        return EspecialidadRepository.listar_especialidades(page, per_page, filters)
+    def listar_especialidades(page: int = 1, per_page: int = 10, filters: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
+        especialidades: List[Especialidad] = EspecialidadRepository.listar_especialidades(page, per_page, filters)
+        total_elements: int = EspecialidadRepository.contar_especialidades(filters)
+
+        if per_page > 0:
+            total_pages = math.ceil(total_elements / per_page)
+        else:
+            total_pages = 0
+
+        return {
+            "content": especialidades,
+            "page": page,
+            "size": per_page,
+            "total_elements": total_elements,
+            "total_pages": total_pages
+        }
 
     @staticmethod
     @retry(max_attempts=3, delay=1.0)
@@ -46,9 +60,8 @@ class EspecialidadService:
 
     @staticmethod
     @retry(max_attempts=3, delay=1.0)
-    def actualizar_especialidad(id: int, especialidad: Especialidad):
-        EspecialidadRepository.actualizar_especialidad(id, especialidad)
-        return especialidad
+    def actualizar_especialidad(especialidad: Especialidad, id: int):
+        EspecialidadRepository.actualizar_especialidad(especialidad, id)
 
     @staticmethod
     @retry(max_attempts=3, delay=1.0)
