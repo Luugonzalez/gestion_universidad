@@ -1,55 +1,10 @@
 version: '3.8'
 
 services:
-  # Base de datos PostgreSQL
-  postgresql:
-    image: postgres:15-alpine
-    container_name: postgresql-servidor
-    restart: always
-    networks:
-      - mired
-    environment:
-      POSTGRES_USER: seba
-      POSTGRES_PASSWORD: sebasefue
-      POSTGRES_DB: PROD_SYSACAD
-    ports:
-      - "5433:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U seba"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # Redis cache
-  redis:
-    image: redis:7-alpine
-    container_name: redis_gestion
-    restart: always
-    networks:
-      - mired
-    command: redis-server --requirepass Qvv3r7y
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # Aplicación Flask
   estructura:
     image: gestion_academica
     container_name: app_gestion
     restart: always
-    depends_on:
-      postgresql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     networks:
       - mired
     ports:
@@ -84,7 +39,3 @@ services:
 networks:
   mired:
     external: true
-
-volumes:
-  postgres_data:
-  redis_data:
