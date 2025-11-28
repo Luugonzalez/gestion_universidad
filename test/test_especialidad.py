@@ -29,7 +29,6 @@ class EspecialidadTestCase(unittest.TestCase):
         self.assertEqual(especialidad.nombre, 'Nombre de especialidad')
         self.assertEqual(especialidad.letra, 'Letra de la especialidad')
         self.assertEqual(especialidad.observacion, 'Observacion de la especialidad')
-       
 
     def test_crear_especialidad(self):
         especialidad = self.__crear_especialidad()
@@ -57,7 +56,7 @@ class EspecialidadTestCase(unittest.TestCase):
             letra='Nueva letra',
             observacion='Nueva observación'
         )
-        especialidad_modificada = EspecialidadService.actualizar_especialidad(especialidad.id, nuevos_datos)
+        especialidad_modificada = EspecialidadService.actualizar_especialidad(nuevos_datos, especialidad.id,)
         especialidad_encontrada = EspecialidadService.buscar_especialidad(especialidad.id)
         self.assertIsNotNone(especialidad_encontrada)
         self.assertEqual(especialidad_encontrada.nombre, 'Nuevo nombre')
@@ -111,8 +110,6 @@ class EspecialidadTestCase(unittest.TestCase):
             observacion='Observacion de la especialidad',
             facultad_id=facultad.id
         )
-        return especialidad
-        especialidad.facultad_id=facultad.id
         return especialidad
 
 if __name__ == '__main__':
