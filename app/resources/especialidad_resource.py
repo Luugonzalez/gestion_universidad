@@ -75,7 +75,7 @@ def crear(especialidad):
 def actualizar(especialidad, id):
     especialidad = especialidad_mapping.load(request.get_json())
     especialidad = sanitizar_especialidad_entrada(especialidad)
-    EspecialidadService.actualizar_especialidad(id, especialidad)
+    EspecialidadService.actualizar_especialidad(especialidad, id)
     return jsonify("Especialidad actualizada exitosamente"), 200        
 
 @especialidad_bp.route('/especialidad/<hashid:id>', methods=['DELETE'])
