@@ -66,16 +66,12 @@ def buscar_por_hashid(id):
 @facultad_bp.route('/facultad', methods=['POST']) 
 @validate_with(FacultadMapping)
 def crear(facultad):
-    facultad = facultad_mapping.load(request.get_json())
-    facultad = sanitizar_facultad_entrada(facultad)
     FacultadService.crear_facultad(facultad)
     return jsonify("Facultad creada exitosamente"), 201 
 
 @facultad_bp.route('/facultad/<hashid:id>', methods=['PUT']) 
 @validate_with(FacultadMapping)
 def actualizar(facultad, id):
-    facultad = facultad_mapping.load(request.get_json())
-    facultad = sanitizar_facultad_entrada(facultad) 
     FacultadService.actualizar_facultad(facultad, id)
     return jsonify("Facultad actualizada exitosamente"), 200 
 
@@ -84,10 +80,10 @@ def borrar_por_hashid(id):
     facultad = FacultadService.eliminar_facultad(id)
     return jsonify("Facultad borrada exitosamente"), 200 
 
-def sanitizar_facultad_entrada(request):
-  facultad= facultad_mapping.load(request.get_json())
+def sanitizar_facultad_entrada(facultad):
   facultad.nombre = escape(facultad.nombre)
   facultad.sigla = escape(facultad.sigla)
+  return facultad
   facultad.codigoPostal = escape(facultad.codigoPostal)
   facultad.abreviatura= escape(facultad.abreviatura)
   facultad.directorio= escape(facultad.directorio)

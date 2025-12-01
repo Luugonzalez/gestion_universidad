@@ -44,3 +44,11 @@ class FacultadRepository:
     entity = FacultadRepository.buscar_facultad(id)
     db.session.delete(entity)
     db.session.commit()
+
+  @staticmethod
+  def contar_facultades(filters: Optional[list] = None) -> int:
+    query = db.session.query(db.func.count(Facultad.id))
+    
+    if filters and isinstance(filters, list):
+        query = apply_filters(query, filters)
+    return query.scalar() or 0
