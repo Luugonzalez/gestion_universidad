@@ -31,6 +31,7 @@ class EspecialidadResourceTestCase(unittest.TestCase):
         db.drop_all()
         self.app_context.pop()
 
+<<<<<<< HEAD
     def _crear_universidad(self, nombre="UTN", sigla="UTN", tipo="publica"):
         u = Universidad(nombre=nombre, sigla=sigla, tipo=tipo)
         return UniversidadService.crear_universidad(u)
@@ -67,6 +68,9 @@ class EspecialidadResourceTestCase(unittest.TestCase):
         return especialidades
 
     def test_get_especialidades(self):
+=======
+    def test_obtener_todos(self):
+>>>>>>> da9a114 (cambios)
         response = self.client.get('/api/v1/especialidad')
         self.assertEqual(response.status_code, 200)
         data = response.get_json()
