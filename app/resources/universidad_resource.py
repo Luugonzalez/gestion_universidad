@@ -100,14 +100,3 @@ def sanitizar_universidad_entrada(request):
 
 
 
-#crea un objeto json que se le va a devolver al usuario
-#para ejecutar para probarlo desde el postman por ej, hay que crear las tablas y un migrate
-#abrio el pgadmin para ver las tablas
-#en consola:
-#flask db migrate 
-#hay que modificar las variables de flask context para que la base sea PROD
-#flask db init
-#migraciones en env.py:
-#from app .models import *
-#flask db upgrade
-#flask app.py
