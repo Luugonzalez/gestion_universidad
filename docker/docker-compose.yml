@@ -1,16 +1,16 @@
+version: "3.8"
+
 services:
-  # Aplicación Flask
   estructura:
     image: gestion_academica
     container_name: app_gestion
     restart: always
-
     networks:
       - mired
     #ports:
     # - "5000:5000"
     environment:
-      - FLASK_CONTEXT=${FLASK_CONTEXT}
+      - FLASK_CONTEXT=production
       - SQLALCHEMY_TRACK_MODIFICATIONS=${SQLALCHEMY_TRACK_MODIFICATIONS}
       - SQLALCHEMY_RECORD_QUERIES=${SQLALCHEMY_RECORD_QUERIES}
       - PROD_DATABASE_URI=${PROD_DATABASE_URI}
@@ -22,7 +22,6 @@ services:
       - HASHIDS_ALPHABET=${HASHIDS_ALPHABET}
       - HASHIDS_SALT=${HASHIDS_SALT}
       - SECRET_KEY=${SECRET_KEY}
-
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`backend.universidad.localhost`)"

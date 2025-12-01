@@ -7,7 +7,7 @@ class EspecialidadMapping(Schema):
     nombre = fields.Str(required=True, validate=validate.Length(min=1, max=100))
     letra = fields.Str(required=True, validate=validate.Length(min=1, max=100))
     observacion = fields.Str(required=True, validate=validate.Length(min=1, max=100))
-    facultad_id = fields.Int(load_only=True, allow_none=True)  # No es requerido
+    facultad_id = fields.Int(required=True)
 
     @post_load
     def nueva_especialidad(self, data, **kwargs):
