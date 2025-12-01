@@ -59,6 +59,8 @@ def listar_facultades():
 @cache.cached(timeout=60)
 def buscar_por_hashid(id):
     facultad = FacultadService.buscar_facultad(id)
+    if facultad is None:
+        return jsonify({"error": "Facultad no encontrada"}), 404
     return facultad_mapping.dump(facultad), 200
 
 @facultad_bp.route('/facultad', methods=['POST']) 
