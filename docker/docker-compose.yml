@@ -7,8 +7,8 @@ services:
     restart: always
     networks:
       - mired
-    #ports:
-    # - "5000:5000"
+    ports:
+    - "5000:5000"
     environment:
       - FLASK_CONTEXT=production
       - SQLALCHEMY_TRACK_MODIFICATIONS=${SQLALCHEMY_TRACK_MODIFICATIONS}
