@@ -31,42 +31,8 @@ class EspecialidadResourceTestCase(unittest.TestCase):
         db.drop_all()
         self.app_context.pop()
 
-    def _crear_universidad(self, nombre="UTN", sigla="UTN", tipo="publica"):
-        u = Universidad(nombre=nombre, sigla=sigla, tipo=tipo)
-        return UniversidadService.crear_universidad(u)
-
-    def _crear_facultad(self, nombre='Facultad de Prueba', abreviatura='FP'):
-        uni = self._crear_universidad()
-        f = Facultad(
-            nombre=nombre,
-            abreviatura=abreviatura,
-            directorio='directorio',
-            sigla=abreviatura,
-            codigoPostal='1234',
-            ciudad='Ciudad',
-            domicilio='Domicilio',
-            telefono='0000',
-            contacto='Contacto',
-            email='email@prueba.com',
-            universidad_id=uni.id
-        )
-        return FacultadService.crear_facultad(f)
-
-    def _crear_especialidades(self, count=1, nombres=None):
-        especialidades = []
-        for i in range(count):
-            nombre = nombres[i] if nombres and i < len(nombres) else f'Especialidad {i}'
-            e = Especialidad(
-                nombre=nombre,
-                letra=f"L{i}",
-                observacion=f"Observación {i}",
-                facultad_id=self.facultad.id
-            )
-            EspecialidadService.crear_especialidad(e)
-            especialidades.append(e)
-        return especialidades
-
-    def test_get_especialidades(self):
+    def test_obtener_todos(self):
+        """Test GET /api/v1/especialidad - lista vacía"""
         response = self.client.get('/api/v1/especialidad')
         self.assertEqual(response.status_code, 200)
         data = response.get_json()

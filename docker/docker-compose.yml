@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   estructura:
@@ -7,8 +7,8 @@ services:
     restart: always
     networks:
       - mired
-    ports:
-      - "5000:5000"
+    #ports:
+    # - "5000:5000"
     environment:
       - FLASK_CONTEXT=production
       - SQLALCHEMY_TRACK_MODIFICATIONS=${SQLALCHEMY_TRACK_MODIFICATIONS}
@@ -22,19 +22,17 @@ services:
       - HASHIDS_ALPHABET=${HASHIDS_ALPHABET}
       - HASHIDS_SALT=${HASHIDS_SALT}
       - SECRET_KEY=${SECRET_KEY}
-    env_file:
-      - .env
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`backend.universidad.localhost`)"
       - "traefik.http.routers.backend.tls=true"
-      - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.services.backend.loadbalancer.server.port=5000"
       - "traefik.docker.network=mired"
+      #- "traefik.http.routers.backend.entrypoints=websecure"
       # Retry middleware
-      - "traefik.http.middlewares.backend-retry.retry.attempts=3"
-      - "traefik.http.middlewares.backend-retry.retry.initialinterval=100ms"
-      - "traefik.http.routers.backend.middlewares=backend-retry"
+      #- "traefik.http.middlewares.backend-retry.retry.attempts=3"
+      #- "traefik.http.middlewares.backend-retry.retry.initialinterval=100ms"
+      #- "traefik.http.routers.backend.middlewares=backend-retry"
 
 networks:
   mired:

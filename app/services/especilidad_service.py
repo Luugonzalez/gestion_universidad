@@ -2,29 +2,7 @@ from app.models import Especialidad
 from app.repositories import EspecialidadRepository
 from typing import Optional, List, Dict, Any
 import math
-import logging
-from functools import wraps
-import time
-
-def retry(max_attempts: int = 3, delay: float = 1.0):
-    """Decorator para reintentar operaciones con delay exponencial"""
-    def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            attempt = 1
-            while attempt <= max_attempts:
-                try:
-                    return func(*args, **kwargs)
-                except Exception as e:
-                    if attempt == max_attempts:
-                        logging.error(f"Error después de {max_attempts} intentos: {str(e)}")
-                        raise
-                    wait_time = delay * (2 ** (attempt - 1))
-                    logging.warning(f"Intento {attempt} falló. Reintentando en {wait_time}s: {str(e)}")
-                    time.sleep(wait_time)
-                    attempt += 1
-        return wrapper
-    return decorator
+from app.utils.retry import retry
 
 class EspecialidadService:
     @staticmethod

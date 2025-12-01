@@ -21,10 +21,6 @@ class EspecialidadServiceTestCase(unittest.TestCase):
         db.drop_all()
         self.app_context.pop()
 
-    # -----------------------------------------------------------------------
-    # Helpers
-    # -----------------------------------------------------------------------
-
     def _crear_universidad(self, nombre="UTN", sigla="UTN", tipo="publica"):
         u = Universidad(nombre=nombre, sigla=sigla, tipo=tipo)
         return UniversidadService.crear_universidad(u)
