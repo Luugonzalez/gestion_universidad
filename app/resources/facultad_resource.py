@@ -7,8 +7,17 @@ import json
 import logging
 
 facultad_bp = Blueprint('facultad', __name__)
+service: FacultadService = FacultadService()
 facultad_mapping = FacultadMapping()
 
+@facultad_bp.get("/facultad/<hashid:id>/especialidad")
+def get_especialidad(id):
+    try:
+        data = service.obtener_especialidad_por_id(id)
+        return jsonify(data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 @facultad_bp.route('/facultad/<hashid:id>', methods=['GET']) #Funciona
 def buscar_por_hashid(id):
     facultad = FacultadService.buscar_facultad(id)

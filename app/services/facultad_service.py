@@ -1,9 +1,21 @@
 from app.models import Facultad
 from app.repositories import FacultadRepository
 from typing import Optional
+import requests
+from app.utils.retry import retry
 import logging
 
 class FacultadService:
+  @retry(max_attempts=3, delay=1)
+  def obtener_especialidad(self, id):
+        url = f"http://especialidad:5000/api/especialidades/{id}"
+
+        response = requests.get(url, timeout=5)
+
+        if response.status_code != 200:
+            raise Exception(f"Error HTTP {response.status_code} en Especialidad")
+
+        return response.json()
 
   @staticmethod
   def crear_facultad(facultad: Facultad):
