@@ -25,5 +25,5 @@ class UniversidadResourceTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         universidades = response.get_json()
         self.assertIsNotNone(universidades)
-        self.assertIsInstance(universidades, list)
+        self.assertIsInstance(universidades, dict)
         
