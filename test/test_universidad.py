@@ -2,11 +2,12 @@ import unittest
 from flask import current_app
 from app import create_app, db
 from app.models import Universidad, Facultad
-from app.services import UniversidadService,  FacultadService
+from app.services import UniversidadService, FacultadService
 import os
 import json
 
-class CartTestCase(unittest.TestCase):
+
+class UniversidadTestCase(unittest.TestCase):
 
     def setUp(self):
         os.environ['FLASK_CONTEXT'] = 'testing'
@@ -14,7 +15,6 @@ class CartTestCase(unittest.TestCase):
         self.app_context = self.app.app_context()
         self.app_context.push()
         db.create_all()
-        
         self.client = self.app.test_client()
 
     def tearDown(self):
@@ -22,70 +22,103 @@ class CartTestCase(unittest.TestCase):
         db.drop_all()
         self.app_context.pop()
 
+    # -----------------------------------------------------------------------
+    # Utilidades
+    # -----------------------------------------------------------------------
+
+    def __crear_universidad(self, nombre=None, sigla=None, tipo=None):
+        u = Universidad()
+        u.nombre = nombre or "Universidad Tecnologica Nacional"
+        u.sigla = sigla or "UTN"
+        u.tipo = tipo or "publica"
+        return u
+
+    def __crear_universidades(self, count=1, tipos=None):
+        universidades = []
+        for i in range(count):
+            u = Universidad(
+                nombre=f"Universidad {i+1}",
+                sigla=f"U{i+1}",
+                tipo=(tipos[i] if tipos and i < len(tipos) else ("publica" if i % 2 == 0 else "privada"))
+            )
+            UniversidadService.crear_universidad(u)
+            universidades.append(u)
+        return universidades
+
+    # -----------------------------------------------------------------------
+    # Tests básicos del contexto
+    # -----------------------------------------------------------------------
+
     def test_app(self):
         self.assertIsNotNone(current_app)
 
-    def test_Universidad(self):
+    def test_model_universidad(self):
         universidad = self.__crear_universidad()
-        self.assertEqual(universidad.nombre, 'Universidad Tecnologica Nacional')
+        self.assertEqual(universidad.nombre, "Universidad Tecnologica Nacional")
         self.assertEqual(universidad.sigla, "UTN")
         self.assertEqual(universidad.tipo, "publica")
 
+    # -----------------------------------------------------------------------
+    # Tests de servicio
+    # -----------------------------------------------------------------------
+
     def test_crear_universidad(self):
         universidad = self.__crear_universidad()
-        universidad_guardada = UniversidadService.crear_universidad(universidad)
-        self.assertIsNotNone(universidad_guardada)
-        self.assertIsNotNone(universidad.id)
-        self.assertGreaterEqual(universidad_guardada.id, 1)
-        self.assertEqual(universidad_guardada.nombre, universidad.nombre)
-        self.assertEqual(universidad_guardada.sigla, universidad.sigla)
-        self.assertEqual(universidad_guardada.tipo, universidad.tipo)
+        guardada = UniversidadService.crear_universidad(universidad)
+
+        self.assertIsNotNone(guardada.id)
+        self.assertEqual(guardada.nombre, universidad.nombre)
+        self.assertEqual(guardada.sigla, universidad.sigla)
+        self.assertEqual(guardada.tipo, universidad.tipo)
 
     def test_listar_universidades(self):
-        universidad = self.__crear_universidad()
-        UniversidadService.crear_universidad(universidad)
-        universidades = UniversidadService.listar_universidades()
-        self.assertIsNotNone(universidades)
-        self.assertGreaterEqual(len(universidades), 1)
+        UniversidadService.crear_universidad(self.__crear_universidad())
+
+        result = UniversidadService.listar_universidades()
+        self.assertIsInstance(result, dict)
+        self.assertIn("content", result)
+        self.assertGreaterEqual(len(result["content"]), 1)
 
     def test_buscar_universidad(self):
         universidad = self.__crear_universidad()
-        UniversidadService.crear_universidad(universidad)
+        guardada = UniversidadService.crear_universidad(universidad)
 
-        universidad_encontrada = UniversidadService.buscar_universidad(1)
-        self.assertIsNotNone(universidad)
-        self.assertIsNotNone(universidad.id)
-        self.assertGreaterEqual(universidad.id, 1)
-        self.assertEqual(universidad.nombre, universidad_encontrada.nombre)
-        self.assertEqual(universidad.sigla, universidad_encontrada.sigla)
-        self.assertEqual(universidad.tipo, universidad_encontrada.tipo)
+        encontrada = UniversidadService.buscar_universidad(guardada.id)
+
+        self.assertIsNotNone(encontrada)
+        self.assertEqual(encontrada.nombre, universidad.nombre)
+        self.assertEqual(encontrada.sigla, universidad.sigla)
+        self.assertEqual(encontrada.tipo, universidad.tipo)
 
     def test_actualizar_universidad(self):
         universidad = self.__crear_universidad()
         UniversidadService.crear_universidad(universidad)
 
-        nuevosdatosuniversidad = Universidad()
-        nuevosdatosuniversidad.nombre = "Universidad Tecnologica Nacional Modificada"
-        nuevosdatosuniversidad.sigla = "UTN Modificada"
-        nuevosdatosuniversidad.tipo = 'privada'
+        nuevos = Universidad(
+            nombre="UTN Modificada",
+            sigla="UTN-M",
+            tipo="privada"
+        )
 
-        universidadmodificada = UniversidadService.actualizar_universidad(nuevosdatosuniversidad, universidad.id)
-        universidadencontrada = UniversidadService.buscar_universidad(universidad.id)
+        modificada = UniversidadService.actualizar_universidad(nuevos, universidad.id)
+        encontrada = UniversidadService.buscar_universidad(universidad.id)
 
-        self.assertIsNotNone(universidadencontrada)
-        self.assertIsNotNone(universidadencontrada.id)
-        self.assertGreaterEqual(universidadencontrada.id, 1)
-        self.assertEqual(universidadencontrada.nombre, universidadmodificada.nombre)
-        self.assertEqual(universidadencontrada.sigla, universidadmodificada.sigla)
-        self.assertEqual(universidadencontrada.tipo, universidadmodificada.tipo)
+        self.assertEqual(encontrada.nombre, "UTN Modificada")
+        self.assertEqual(encontrada.sigla, "UTN-M")
+        self.assertEqual(encontrada.tipo, "privada")
 
     def test_eliminar_universidad(self):
         universidad = self.__crear_universidad()
         UniversidadService.crear_universidad(universidad)
-        UniversidadService.eliminar_universidad(universidad.id)
 
-        universidad_encontrada = UniversidadService.buscar_universidad(universidad.id)
-        self.assertIsNone(universidad_encontrada)
+        UniversidadService.eliminar_universidad(universidad.id)
+        encontrada = UniversidadService.buscar_universidad(universidad.id)
+
+        self.assertIsNone(encontrada)
+
+    # -----------------------------------------------------------------------
+    # Relación: Universidad con Facultades
+    # -----------------------------------------------------------------------
 
     def test_universidad_con_facultades(self):
         universidad = self.__crear_universidad()
@@ -94,8 +127,8 @@ class CartTestCase(unittest.TestCase):
         facultad = Facultad(
             nombre='Facultad Regional Mendoza',
             abreviatura='FRM',
-            directorio='directorio',
-            sigla='sigla',
+            directorio='dir',
+            sigla='FRM',
             codigoPostal='5500',
             ciudad='Mendoza',
             domicilio='Calle Falsa 123',
@@ -104,50 +137,84 @@ class CartTestCase(unittest.TestCase):
             email='contacto@frm.utn.edu.ar',
             universidad_id=universidad.id
         )
-        FacultadService.crear_facultad(facultad)
-        universidad_con_facultades = UniversidadService.buscar_universidad(universidad.id)
-        self.assertIsNotNone(universidad_con_facultades.facultades)
-        self.assertEqual(len(universidad_con_facultades.facultades), 1)
-        self.assertEqual(universidad_con_facultades.facultades[0].nombre, 'Facultad Regional Mendoza')
 
-    def __crear_universidad(self):
-        universidad = Universidad()
-        universidad.nombre = "Universidad Tecnologica Nacional"
-        universidad.sigla = "UTN"
-        universidad.tipo = "publica"
-        return universidad
+        FacultadService.crear_facultad(facultad)
+
+        encontrada = UniversidadService.buscar_universidad(universidad.id)
+
+        self.assertEqual(len(encontrada.facultades), 1)
+        self.assertEqual(encontrada.facultades[0].nombre, "Facultad Regional Mendoza")
+
+    # -----------------------------------------------------------------------
+    # Tests de ENDPOINTS
+    # -----------------------------------------------------------------------
 
     def test_post_universidad_datos_validos(self):
         payload = {
             "nombre": "Universidad de Prueba",
             "sigla": "UDP",
-            "tipo": "Publica"
+            "tipo": "publica"
         }
-        response = self.client.post(
+
+        resp = self.client.post(
             "/api/v1/universidad",
             data=json.dumps(payload),
             content_type="application/json"
         )
 
-        self.assertEqual(response.status_code, 201)  # 201 Created
-        self.assertIn("Universidad", response.get_data(as_text=True))
-    
+        self.assertEqual(resp.status_code, 201)
+
+        # Verificar que la respuesta sea un JSON válido
+        self.assertIn("creada", resp.get_data(as_text=True).lower())
+
     def test_post_universidad_datos_invalidos(self):
-        # Falta 'sigla' y 'tipo'
-        payload = {"nombre": "Universidad Incompleta"}
-        response = self.client.post(
+        payload = {"nombre": "Universidad Incompleta"}  # Falta sigla y tipo
+
+        resp = self.client.post(
             "/api/v1/universidad",
             data=json.dumps(payload),
             content_type="application/json"
         )
 
-        self.assertEqual(response.status_code, 400)  # Bad Request
-        json_response = response.get_json()
-        self.assertIn("sigla", json_response)  # debe indicar error en sigla
-        print(response.status_code)
-        print(response.get_json())
+        self.assertEqual(resp.status_code, 400)
+        data = resp.get_json()
+
+        self.assertIn("sigla", data)
+        self.assertIn("tipo", data)
+
+    def test_listar_universidades_endpoint_paginacion(self):
+        self.__crear_universidades(12)
+
+        resp = self.client.get(
+            "/api/v1/universidad",
+            headers={"X-page": "2", "X-per-page": "5"}
+        )
+
+        self.assertEqual(resp.status_code, 200)
+        data = resp.get_json()
+
+        self.assertEqual(len(data["content"]), 5)
+        self.assertEqual(data["pageable"]["page"], 2) # nro de página
+        self.assertEqual(data["pageable"]["size"], 5) # tamaño de página (en elementos)
+        self.assertEqual(data["pageable"]["total_elements"], 12) # cant. total de elementos
+        self.assertEqual(data["pageable"]["total_pages"], 3) # cant. total de páginas
+
+    def test_listar_universidades_endpoint_filters(self):
+        tipos = ["privada"] * 3 + ["publica"] * 2
+        self.__crear_universidades(5, tipos=tipos)
+
+        resp = self.client.get(
+            "/api/v1/universidad",
+            headers={"X-filters": json.dumps({"tipo": "privada"})}
+        )
+
+        self.assertEqual(resp.status_code, 200)
+
+        data = resp.get_json()
+        tipos_resultantes = [u["tipo"].lower() for u in data["content"]]
+
+        self.assertTrue(all(t == "privada" for t in tipos_resultantes))
 
 
-            
 if __name__ == '__main__':
     unittest.main()

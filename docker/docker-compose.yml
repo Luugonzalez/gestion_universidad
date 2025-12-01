@@ -1,59 +1,14 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  # Base de datos PostgreSQL
-  postgresql:
-    image: postgres:15-alpine
-    container_name: postgresql-servidor
-    restart: always
-    networks:
-      - mired
-    environment:
-      POSTGRES_USER: seba
-      POSTGRES_PASSWORD: sebasefue
-      POSTGRES_DB: PROD_SYSACAD
-    ports:
-      - "5433:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U seba"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # Redis cache
-  redis:
-    image: redis:7-alpine
-    container_name: redis_gestion
-    restart: always
-    networks:
-      - mired
-    command: redis-server --requirepass Qvv3r7y
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # Aplicación Flask
   estructura:
     image: gestion_academica
     container_name: app_gestion
     restart: always
-    depends_on:
-      postgresql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     networks:
       - mired
-    ports:
-      - "5000:5000"
+    #ports:
+    # - "5000:5000"
     environment:
       - FLASK_CONTEXT=production
       - SQLALCHEMY_TRACK_MODIFICATIONS=${SQLALCHEMY_TRACK_MODIFICATIONS}
@@ -67,24 +22,18 @@ services:
       - HASHIDS_ALPHABET=${HASHIDS_ALPHABET}
       - HASHIDS_SALT=${HASHIDS_SALT}
       - SECRET_KEY=${SECRET_KEY}
-    env_file:
-      - .env
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`backend.universidad.localhost`)"
       - "traefik.http.routers.backend.tls=true"
-      - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.services.backend.loadbalancer.server.port=5000"
       - "traefik.docker.network=mired"
+      #- "traefik.http.routers.backend.entrypoints=websecure"
       # Retry middleware
-      - "traefik.http.middlewares.backend-retry.retry.attempts=3"
-      - "traefik.http.middlewares.backend-retry.retry.initialinterval=100ms"
-      - "traefik.http.routers.backend.middlewares=backend-retry"
+      #- "traefik.http.middlewares.backend-retry.retry.attempts=3"
+      #- "traefik.http.middlewares.backend-retry.retry.initialinterval=100ms"
+      #- "traefik.http.routers.backend.middlewares=backend-retry"
 
 networks:
   mired:
     external: true
-
-volumes:
-  postgres_data:
-  redis_data:

@@ -1,16 +1,29 @@
 from app.models import Especialidad
 from app import db
 from sqlalchemy_filters import apply_filters
-from typing import Optional
+import logging
+from typing import Optional, List
 
 class EspecialidadRepository:
     @staticmethod
-    def listar_especialidades(page: int, per_page: int, filters: Optional[list] = None):
-        query = db.session.query(Especialidad)
+    def listar_especialidades(page: int, per_page: int, filters: Optional[list] = None) -> list[Especialidad]:
+        logging.info("page: {}, per_page: {}, filters: {}".format(page, per_page, filters))
+
+        query = db.session.query(Especialidad).order_by(Especialidad.id)
+    
         if filters and isinstance(filters, list):
             query = apply_filters(query, filters)
+    
         paginated_query = query.offset((page - 1) * per_page).limit(per_page)
         return paginated_query.all()
+    
+    @staticmethod
+    def contar_especialidades(filters: Optional[List] = None) -> int:
+        query = db.session.query(db.func.count(Especialidad.id))
+        
+        if filters and isinstance(filters, list):
+            query = apply_filters(query, filters)
+        return query.scalar() or 0
 
     @staticmethod
     def crear_especialidad(especialidad: Especialidad):
@@ -23,7 +36,7 @@ class EspecialidadRepository:
         return db.session.query(Especialidad).filter(Especialidad.id == id).one_or_none()
 
     @staticmethod
-    def actualizar_especialidad(id: int, especialidad: Especialidad) -> Especialidad:
+    def actualizar_especialidad(especialidad: Especialidad, id: int) -> Especialidad:
         entity = EspecialidadRepository.buscar_especialidad(id)
         if not entity:
             return None  
