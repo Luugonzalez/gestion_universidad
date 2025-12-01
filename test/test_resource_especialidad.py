@@ -21,7 +21,6 @@ class EspecialidadResourceTestCase(unittest.TestCase):
         self.app_context.pop()
 
     def test_obtener_todos(self):
-        """Test GET /api/v1/especialidad - lista vacía"""
         response = self.client.get('/api/v1/especialidad')
         self.assertEqual(response.status_code, 200)
 
