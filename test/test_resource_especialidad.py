@@ -85,7 +85,7 @@ class EspecialidadResourceTestCase(unittest.TestCase):
         data = response.get_json()
         self.assertEqual(data["letra"], "A")
 
-    def test_crear_especialidad(self):
+    def test_post_especialidad(self):
         payload = {
             "nombre": "Especialidad C",
             "letra": "C",
