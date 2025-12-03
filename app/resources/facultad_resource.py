@@ -81,19 +81,20 @@ def borrar_por_hashid(id):
     return jsonify("Facultad borrada exitosamente"), 200 
 
 def sanitizar_facultad_entrada(facultad):
-  facultad.nombre = escape(facultad.nombre)
-  facultad.sigla = escape(facultad.sigla)
-  return facultad
-  facultad.codigoPostal = escape(facultad.codigoPostal)
-  facultad.abreviatura= escape(facultad.abreviatura)
-  facultad.directorio= escape(facultad.directorio)
-  facultad.ciudad= escape(facultad.ciudad)
-  facultad.domicilio= escape(facultad.domicilio)
-  facultad.telefono= escape(facultad.telefono)
-  facultad.contacto= escape(facultad.contacto)
-  facultad.email= escape(facultad.email)
-
-  return facultad
+    facultad.nombre = escape(facultad.nombre)
+    facultad.sigla = escape(facultad.sigla) 
+    return facultad 
+    facultad.nombre = escape(facultad.nombre)
+    facultad.sigla = escape(facultad.sigla)
+    facultad.codigoPostal = escape(facultad.codigoPostal)
+    facultad.abreviatura = escape(facultad.abreviatura)
+    facultad.directorio = escape(facultad.directorio)
+    facultad.ciudad = escape(facultad.ciudad)
+    facultad.domicilio = escape(facultad.domicilio)
+    facultad.telefono = escape(facultad.telefono)
+    facultad.contacto = escape(facultad.contacto)
+    facultad.email = escape(facultad.email)
+    return facultad
 
 
 
