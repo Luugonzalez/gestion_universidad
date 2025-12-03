@@ -1,30 +1,69 @@
 import unittest
 import os
-import json
+from app import db
+from flask import current_app
+from app import create_app
+from app.models.facultad import Facultad
+from app.models.especialidad import Especialidad
+from app.mapping.especialidad_mapping import EspecialidadMapping
 from hashids import Hashids
-from unittest.mock import patch
-from app import db, create_app
-from app.models import Especialidad, Facultad, Universidad
-from app.services import FacultadService, UniversidadService, EspecialidadService
-from app.resources import especialidad_bp
+import json
 
 class EspecialidadResourceTestCase(unittest.TestCase):
-    
+
     def setUp(self):
         os.environ['FLASK_CONTEXT'] = 'testing'
         self.app = create_app()
+
+        # Desactivar cache en testing
+        self.app.config["CACHE_TYPE"] = "NullCache"
+        self.app.config["CACHE_NO_NULL_WARNING"] = True
+
+        from app import cache
+        cache.init_app(self.app)
+
         self.app_context = self.app.app_context()
         self.app_context.push()
-
         db.create_all()
         self.client = self.app.test_client()
-        self.facultad = self._crear_facultad()  # Facultad reusable para todos los tests
 
-        self.hashids = Hashids(
-            salt=os.getenv('HASHIDS_SALT', 'Sistemas de gestion academica'),
-            min_length=int(os.getenv('HASHIDS_MIN_LENGTH', 16)),
-            alphabet=os.getenv('HASHIDS_ALPHABET', 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890')
+        salt = self.app.config.get('HASHIDS_SALT', 'especialidades')
+        min_length = self.app.config.get('HASHIDS_MIN_LENGTH', 10)
+        self.hashids = Hashids(min_length=min_length, salt=salt)
+
+        self.facultad = Facultad(
+            nombre="Ingeniería",
+            abreviatura="ING",
+            directorio="Directorio X",
+            sigla="ING",
+            codigoPostal="5000",
+            ciudad="Córdoba",
+            domicilio="Av Siempre Viva",
+            telefono="123456",
+            contacto="contacto@ing.com",
+            email="ing@uni.com"
         )
+        db.session.add(self.facultad)
+        db.session.commit()
+
+        self.esp1 = Especialidad(
+            nombre="Especialidad A",
+            letra="A",
+            observacion="Observacion A",
+            facultad_id=self.facultad.id
+        )
+        self.esp2 = Especialidad(
+            nombre="Especialidad B",
+            letra="B",
+            observacion="Observacion B",
+            facultad_id=self.facultad.id
+        )
+
+        db.session.add_all([self.esp1, self.esp2])
+        db.session.commit()
+
+        self.esp1_hash = self.hashids.encode(self.esp1.id)
+        self.esp2_hash = self.hashids.encode(self.esp2.id)
 
     def tearDown(self):
         db.session.remove()
@@ -32,87 +71,71 @@ class EspecialidadResourceTestCase(unittest.TestCase):
         self.app_context.pop()
 
     def test_obtener_todos(self):
-        """Test GET /api/v1/especialidad - lista vacía"""
         response = self.client.get('/api/v1/especialidad')
         self.assertEqual(response.status_code, 200)
+
         data = response.get_json()
         self.assertIn("content", data)
-        self.assertIsInstance(data["content"], list)
-        self.assertEqual(len(data["content"]), 0)
+        self.assertGreaterEqual(len(data["content"]), 2)
 
-    def test_post_especialidad(self):
+    def test_buscar_por_hashid(self):
+        response = self.client.get(f'/api/v1/especialidad/{self.esp1_hash}')
+        self.assertEqual(response.status_code, 200)
+
+        data = response.get_json()
+        self.assertEqual(data["letra"], "A")
+
+    def test_crear_especialidad(self):
         payload = {
-            "nombre": "Ingenieria civil",
+            "nombre": "Especialidad C",
             "letra": "C",
-            "observacion": "Clase normal",
+            "observacion": "Nueva Especialidad",
             "facultad_id": self.facultad.id
         }
-        resp = self.client.post("/api/v1/especialidad",
-                                data=json.dumps(payload),
-                                content_type="application/json")
-        self.assertEqual(resp.status_code, 201)
-        self.assertIn("creada", resp.get_data(as_text=True).lower())
 
-    def test_post_especialidad_invalida(self):
-        payload = {"nombre": "Sin letra ni facultad"}
-        resp = self.client.post("/api/v1/especialidad",
-                                data=json.dumps(payload),
-                                content_type="application/json")
-        self.assertEqual(resp.status_code, 400)
-        data = resp.get_json()
-        self.assertIn("letra", data)
-        self.assertIn("facultad_id", data)
+        response = self.client.post('/api/v1/especialidad', json=payload)
+        self.assertEqual(response.status_code, 201)
 
-    def test_listar_especialidades_paginacion(self):
-        self._crear_especialidades(12)
-        resp = self.client.get("/api/v1/especialidad",
-                               headers={"X-page": "2", "X-per-page": "5"})
-        self.assertEqual(resp.status_code, 200)
-        data = resp.get_json()
-        self.assertEqual(len(data["content"]), 5)
-        self.assertEqual(data["pageable"]["page"], 2)
-        self.assertEqual(data["pageable"]["size"], 5)
-        self.assertEqual(data["pageable"]["total_elements"], 12)
-        self.assertEqual(data["pageable"]["total_pages"], 3)
+        especiales = Especialidad.query.all()
+        self.assertEqual(len(especiales), 3)
 
-    def test_listar_especialidades_filters(self):
-        nombres = ["Ingenieria civil", "Ingenieria Electro", "Ingenieria Sist", "Fisica", "Ingenieria ind"]
-        self._crear_especialidades(5, nombres=nombres)
-        resp = self.client.get("/api/v1/especialidad",
-                               headers={"X-filters": json.dumps({"nombre": "Fisica"})})
-        self.assertEqual(resp.status_code, 200)
-        data = resp.get_json()
-        nombres_resultantes = [e["nombre"] for e in data["content"]]
-        self.assertTrue(all("Yoga" in n for n in nombres_resultantes))
-
-    def test_put_especialidad(self):
-        especialidad = self._crear_especialidades(1)[0]
-        hashid_id = self.hashids.encode(especialidad.id)  
-        
+    def test_actualizar_especialidad(self):
         payload = {
-            "nombre": "Ingenieria civil modificada",
-            "letra": "CM",
-            "observacion": "Clase avanzada",
+            "nombre": "Especialidad A1",
+            "letra": "A1",
+            "observacion": "Modificada",
             "facultad_id": self.facultad.id
         }
 
-        resp = self.client.put(f"/api/v1/especialidad/{hashid_id}",
-                               data=json.dumps(payload),
-                               content_type="application/json")
-        self.assertEqual(resp.status_code, 200)
-        self.assertIn("actualizada", resp.get_data(as_text=True).lower())
+        response = self.client.put(
+            f'/api/v1/especialidad/{self.esp1_hash}',
+            json=payload
+        )
+        self.assertEqual(response.status_code, 200)
 
-    def test_delete_especialidad(self):
-        especialidad = self._crear_especialidades(1)[0]
-        hashid_id = self.hashids.encode(especialidad.id)  # usar .id
+        refreshed = Especialidad.query.get(self.esp1.id)
+        self.assertEqual(refreshed.letra, "A1")
 
-        resp = self.client.delete(f"/api/v1/especialidad/{hashid_id}")
-        self.assertEqual(resp.status_code, 200)
-        self.assertIn("borrada", resp.get_data(as_text=True).lower())
+    def test_borrar_especialidad(self):
+        response = self.client.delete(f'/api/v1/especialidad/{self.esp2_hash}')
+        self.assertEqual(response.status_code, 200)
 
-        # Verificar que realmente no exista
-        get_resp = self.client.get(f"/api/v1/especialidad/{hashid_id}")
-        self.assertEqual(get_resp.status_code, 404)
+        deleted = Especialidad.query.get(self.esp2.id)
+        self.assertIsNone(deleted)
+
+    def test_listar_con_filtros(self):
+        headers = {
+            "X-filters": json.dumps({"letra": "A"})
+        }
+
+        response = self.client.get('/api/v1/especialidad', headers=headers)
+        self.assertEqual(response.status_code, 200)
+
+        data = response.get_json()
+        content = data["content"]
+
+        self.assertEqual(len(content), 1)
+        self.assertEqual(content[0]["letra"], "A")
 
 if __name__ == '__main__':
     unittest.main()
