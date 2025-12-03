@@ -1,8 +1,8 @@
-version: "3.8"
-
 services:
   estructura:
     image: gestion_academica
+    #deploy:
+    #  replicas: 5
     container_name: app_gestion
     restart: always
     networks:
