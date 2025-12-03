@@ -3,6 +3,7 @@ from app.mapping.especialidad_mapping import EspecialidadMapping
 from app.services.especilidad_service import EspecialidadService
 from app.models.especialidad import Especialidad
 from markupsafe import escape
+from marshmallow.exceptions import ValidationError
 import json
 import logging
 
@@ -59,18 +60,30 @@ def buscar_por_hashid(id):
 
 @especialidad_bp.route('/especialidad', methods=['POST'])
 def crear():
-    especialidad = especialidad_mapping.load(request.get_json())
-    especialidad = sanitizar_especialidad_entrada(especialidad)
-    EspecialidadService.crear_especialidad(especialidad)
-    return jsonify("Especialidad creada exitosamente"), 201
+    try:
+        especialidad = especialidad_mapping.load(request.get_json())
+        especialidad = sanitizar_especialidad_entrada(especialidad)
+        EspecialidadService.crear_especialidad(especialidad)
+        return jsonify("Especialidad creada exitosamente"), 201
+    except ValidationError as e:
+        return jsonify({"errors": e.messages}), 422
+    except Exception as e:
+        logging.error(f"Error al crear especialidad: {e}")
+        return jsonify({"error": "Error al crear especialidad"}), 400
 
 
 @especialidad_bp.route('/especialidad/<hashid:id>', methods=['PUT'])
 def actualizar(id):
-    especialidad = especialidad_mapping.load(request.get_json())
-    especialidad = sanitizar_especialidad_entrada(especialidad)
-    EspecialidadService.actualizar_especialidad(especialidad, id)
-    return jsonify("Especialidad actualizada exitosamente"), 200        
+    try:
+        especialidad = especialidad_mapping.load(request.get_json())
+        especialidad = sanitizar_especialidad_entrada(especialidad)
+        EspecialidadService.actualizar_especialidad(especialidad, id)
+        return jsonify("Especialidad actualizada exitosamente"), 200
+    except ValidationError as e:
+        return jsonify({"errors": e.messages}), 422
+    except Exception as e:
+        logging.error(f"Error al actualizar especialidad: {e}")
+        return jsonify({"error": "Error al actualizar especialidad"}), 400        
 
 
 @especialidad_bp.route('/especialidad/<hashid:id>', methods=['DELETE'])

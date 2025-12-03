@@ -86,6 +86,7 @@ class EspecialidadResourceTestCase(unittest.TestCase):
         self.assertEqual(data["letra"], "A")
 
     def test_post_especialidad(self):
+        """Test crear una nueva especialidad con datos válidos"""
         payload = {
             "nombre": "Especialidad C",
             "letra": "C",
@@ -98,6 +99,17 @@ class EspecialidadResourceTestCase(unittest.TestCase):
 
         especiales = Especialidad.query.all()
         self.assertEqual(len(especiales), 3)
+
+    def test_post_especialidad_invalida(self):
+        """Test crear una especialidad con datos inválidos (falta nombre)"""
+        payload = {
+            "letra": "D",
+            "observacion": "Sin nombre",
+            "facultad_id": self.facultad.id
+        }
+
+        response = self.client.post('/api/v1/especialidad', json=payload)
+        self.assertIn(response.status_code, [400, 422])
 
     def test_actualizar_especialidad(self):
         payload = {
@@ -116,6 +128,50 @@ class EspecialidadResourceTestCase(unittest.TestCase):
         refreshed = Especialidad.query.get(self.esp1.id)
         self.assertEqual(refreshed.letra, "A1")
 
+    def test_listar_especialidades_paginacion(self):
+        """Test listar especialidades con paginación"""
+        # Crear más especialidades para probar paginación
+        for i in range(3, 8):
+            esp = Especialidad(
+                nombre=f"Especialidad {chr(64+i)}",
+                letra=chr(64+i),
+                observacion=f"Observacion {i}",
+                facultad_id=self.facultad.id
+            )
+            db.session.add(esp)
+        db.session.commit()
+
+        # Solicitar primera página con límite de 2 usando headers
+        headers = {
+            "X-page": "1",
+            "X-per-page": "2"
+        }
+        response = self.client.get('/api/v1/especialidad', headers=headers)
+        self.assertEqual(response.status_code, 200)
+
+        data = response.get_json()
+        self.assertIn("content", data)
+        self.assertEqual(len(data["content"]), 2)
+
+    def test_put_especialidad(self):
+        """Test actualizar una especialidad existente"""
+        payload = {
+            "nombre": "Especialidad A Modificada",
+            "letra": "A1",
+            "observacion": "Modificada",
+            "facultad_id": self.facultad.id
+        }
+
+        response = self.client.put(
+            f'/api/v1/especialidad/{self.esp1_hash}',
+            json=payload
+        )
+        self.assertEqual(response.status_code, 200)
+
+        refreshed = Especialidad.query.get(self.esp1.id)
+        self.assertEqual(refreshed.letra, "A1")
+        self.assertEqual(refreshed.nombre, "Especialidad A Modificada")
+
     def test_borrar_especialidad(self):
         response = self.client.delete(f'/api/v1/especialidad/{self.esp2_hash}')
         self.assertEqual(response.status_code, 200)
@@ -123,7 +179,16 @@ class EspecialidadResourceTestCase(unittest.TestCase):
         deleted = Especialidad.query.get(self.esp2.id)
         self.assertIsNone(deleted)
 
-    def test_listar_con_filtros(self):
+    def test_delete_especialidad(self):
+        """Test eliminar una especialidad"""
+        response = self.client.delete(f'/api/v1/especialidad/{self.esp2_hash}')
+        self.assertEqual(response.status_code, 200)
+
+        deleted = Especialidad.query.get(self.esp2.id)
+        self.assertIsNone(deleted)
+
+    def test_listar_especialidades_filters(self):
+        """Test listar especialidades con filtros"""
         headers = {
             "X-filters": json.dumps({"letra": "A"})
         }
