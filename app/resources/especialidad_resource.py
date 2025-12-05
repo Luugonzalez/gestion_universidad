@@ -1,9 +1,11 @@
 from flask import jsonify, Blueprint, request
-from app.mapping.especialidad_mapping import EspecialidadMapping            
+from app.mapping.especialidad_mapping import EspecialidadMapping
 from app.services.especilidad_service import EspecialidadService
 from app.models.especialidad import Especialidad
 from markupsafe import escape
-from marshmallow.exceptions import ValidationError
+from app.validators import validate_with
+from app import cache
+
 import json
 import logging
 
@@ -53,37 +55,28 @@ def listar_especialidades():
 
 
 @especialidad_bp.route('/especialidad/<hashid:id>', methods=['GET'])
+@cache.cached(timeout=60)
 def buscar_por_hashid(id):
     especialidad = EspecialidadService.buscar_especialidad(id)
+    if especialidad is None:
+        return jsonify({"error": "Especialidad no encontrada"}), 404
     return especialidad_mapping.dump(especialidad), 200 
 
 
 @especialidad_bp.route('/especialidad', methods=['POST'])
-def crear():
-    try:
-        especialidad = especialidad_mapping.load(request.get_json())
-        especialidad = sanitizar_especialidad_entrada(especialidad)
-        EspecialidadService.crear_especialidad(especialidad)
-        return jsonify("Especialidad creada exitosamente"), 201
-    except ValidationError as e:
-        return jsonify({"errors": e.messages}), 422
-    except Exception as e:
-        logging.error(f"Error al crear especialidad: {e}")
-        return jsonify({"error": "Error al crear especialidad"}), 400
+@validate_with(EspecialidadMapping)
+def crear(especialidad):
+    EspecialidadService.crear_especialidad(especialidad)
+    return jsonify("Especialidad creada exitosamente"), 201
 
 
 @especialidad_bp.route('/especialidad/<hashid:id>', methods=['PUT'])
-def actualizar(id):
-    try:
-        especialidad = especialidad_mapping.load(request.get_json())
-        especialidad = sanitizar_especialidad_entrada(especialidad)
-        EspecialidadService.actualizar_especialidad(especialidad, id)
-        return jsonify("Especialidad actualizada exitosamente"), 200
-    except ValidationError as e:
-        return jsonify({"errors": e.messages}), 422
-    except Exception as e:
-        logging.error(f"Error al actualizar especialidad: {e}")
-        return jsonify({"error": "Error al actualizar especialidad"}), 400        
+@validate_with(EspecialidadMapping)
+def actualizar(especialidad, id):
+    especialidad = EspecialidadService.actualizar_especialidad(especialidad, id)
+    if especialidad is None:
+        return jsonify({"error": "Especialidad no encontrada"}), 404
+    return jsonify("Especialidad actualizada exitosamente"), 200        
 
 
 @especialidad_bp.route('/especialidad/<hashid:id>', methods=['DELETE'])

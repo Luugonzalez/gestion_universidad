@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   estructura:
     image: gestion_academica
@@ -22,13 +24,13 @@ services:
       - HASHIDS_ALPHABET=${HASHIDS_ALPHABET}
       - HASHIDS_SALT=${HASHIDS_SALT}
       - SECRET_KEY=${SECRET_KEY}
+
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`backend.universidad.localhost`)"
       - "traefik.http.routers.backend.tls=true"
       - "traefik.http.services.backend.loadbalancer.server.port=5000"
       - "traefik.docker.network=mired"
-
       - "traefik.http.middlewares.documento-service.circuitbreaker.expression=NetworkErrorRatio() > 0.5"
       - "traefik.http.middlewares.doc-service.circuitbreaker.expression=ResponseCodeRatio(500,600,0,600) > 0.25"
       - "traefik.http.middlewares.doc-service.circuitbreaker.expression=LatencyAtQuantileMS(95) > 1000"
