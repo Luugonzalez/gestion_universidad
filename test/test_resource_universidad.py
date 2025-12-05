@@ -109,6 +109,3 @@ class UniversidadResourceTestCase(unittest.TestCase):
 
         self.assertEqual(len(content), 1)
         self.assertEqual(content[0]["nombre"], "UTN")
-
-
-

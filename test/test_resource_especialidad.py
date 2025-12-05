@@ -5,7 +5,6 @@ from flask import current_app
 from app import create_app
 from app.models.facultad import Facultad
 from app.models.especialidad import Especialidad
-from app.mapping.especialidad_mapping import EspecialidadMapping
 from hashids import Hashids
 import json
 
@@ -70,7 +69,8 @@ class EspecialidadResourceTestCase(unittest.TestCase):
         db.drop_all()
         self.app_context.pop()
 
-    def test_obtener_todos(self):
+    def test_get_especialidades(self):
+
         response = self.client.get('/api/v1/especialidad')
         self.assertEqual(response.status_code, 200)
 
@@ -78,14 +78,14 @@ class EspecialidadResourceTestCase(unittest.TestCase):
         self.assertIn("content", data)
         self.assertGreaterEqual(len(data["content"]), 2)
 
-    def test_buscar_por_hashid(self):
+    def test_get_by_hashid(self):
         response = self.client.get(f'/api/v1/especialidad/{self.esp1_hash}')
         self.assertEqual(response.status_code, 200)
 
         data = response.get_json()
         self.assertEqual(data["letra"], "A")
 
-    def test_crear_especialidad(self):
+    def test_post_especialidad(self):
         payload = {
             "nombre": "Especialidad C",
             "letra": "C",
@@ -99,7 +99,7 @@ class EspecialidadResourceTestCase(unittest.TestCase):
         especiales = Especialidad.query.all()
         self.assertEqual(len(especiales), 3)
 
-    def test_actualizar_especialidad(self):
+    def test_put(self):
         payload = {
             "nombre": "Especialidad A1",
             "letra": "A1",
@@ -116,14 +116,14 @@ class EspecialidadResourceTestCase(unittest.TestCase):
         refreshed = Especialidad.query.get(self.esp1.id)
         self.assertEqual(refreshed.letra, "A1")
 
-    def test_borrar_especialidad(self):
+    def test_delete(self):
         response = self.client.delete(f'/api/v1/especialidad/{self.esp2_hash}')
         self.assertEqual(response.status_code, 200)
 
         deleted = Especialidad.query.get(self.esp2.id)
         self.assertIsNone(deleted)
 
-    def test_listar_con_filtros(self):
+    def test_get_con_filtros(self):
         headers = {
             "X-filters": json.dumps({"letra": "A"})
         }

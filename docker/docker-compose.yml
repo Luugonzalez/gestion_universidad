@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   estructura:
     image: gestion_academica
@@ -22,6 +24,10 @@ services:
       - HASHIDS_ALPHABET=${HASHIDS_ALPHABET}
       - HASHIDS_SALT=${HASHIDS_SALT}
       - SECRET_KEY=${SECRET_KEY}
+
+    env_file:
+      - .env
+
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`backend.universidad.localhost`)"
