@@ -20,7 +20,7 @@ Microservicio desarrollado en Flask para la gestión académica de la universida
 **Antes de ejecutar:**
 - Crea el archivo `.env` en la raíz del proyecto
 - PostgreSQL debe estar corriendo
-- Redis debe estar corriendo (si usas caché)
+- Redis debe estar corriendo (si usamos caché)
 - Instala dependencias: `pip install -r requirements.txt`
 - Ejecuta migraciones: `flask db upgrade`
 
