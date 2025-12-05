@@ -77,7 +77,7 @@ def actualizar(facultad, id):
 
 @facultad_bp.route('/facultad/<hashid:id>', methods=['DELETE'])
 def borrar_por_hashid(id):
-    facultad = FacultadService.eliminar_facultad(id)
+    FacultadService.eliminar_facultad(id)
     return jsonify("Facultad borrada exitosamente"), 200 
 
 def sanitizar_facultad_entrada(facultad):

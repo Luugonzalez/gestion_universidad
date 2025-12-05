@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from app import db
+from flask_hashids import HashidMixin
+
 @dataclass(init=False, repr=True, eq=True)
-class Facultad(db.Model):
+class Facultad(HashidMixin,db.Model):
   __tablename__ = 'facultades'
   id : int = db.Column(db.Integer, primary_key=True, autoincrement=True)
   nombre: str = db.Column(db.String(100), nullable=False)
@@ -20,8 +22,3 @@ class Facultad(db.Model):
   universidad = db.relationship("Universidad", back_populates="facultades") 
 
   especialidades = db.relationship("Especialidad", back_populates="facultad")
-
-
-#def asociar_autoridad(self, autoridad):
-#    if autoridad not in self.autoridades:
-#        self.autoridades.append(autoridad)

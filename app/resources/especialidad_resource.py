@@ -1,8 +1,11 @@
 from flask import jsonify, Blueprint, request
-from app.mapping.especialidad_mapping import EspecialidadMapping            
+from app.mapping.especialidad_mapping import EspecialidadMapping
 from app.services.especilidad_service import EspecialidadService
 from app.models.especialidad import Especialidad
 from markupsafe import escape
+from app.validators import validate_with
+from app import cache
+
 import json
 import logging
 
@@ -52,24 +55,27 @@ def listar_especialidades():
 
 
 @especialidad_bp.route('/especialidad/<hashid:id>', methods=['GET'])
+@cache.cached(timeout=60)
 def buscar_por_hashid(id):
     especialidad = EspecialidadService.buscar_especialidad(id)
+    if especialidad is None:
+        return jsonify({"error": "Especialidad no encontrada"}), 404
     return especialidad_mapping.dump(especialidad), 200 
 
 
 @especialidad_bp.route('/especialidad', methods=['POST'])
-def crear():
-    especialidad = especialidad_mapping.load(request.get_json())
-    especialidad = sanitizar_especialidad_entrada(especialidad)
+@validate_with(EspecialidadMapping)
+def crear(especialidad):
     EspecialidadService.crear_especialidad(especialidad)
     return jsonify("Especialidad creada exitosamente"), 201
 
 
 @especialidad_bp.route('/especialidad/<hashid:id>', methods=['PUT'])
-def actualizar(id):
-    especialidad = especialidad_mapping.load(request.get_json())
-    especialidad = sanitizar_especialidad_entrada(especialidad)
-    EspecialidadService.actualizar_especialidad(especialidad, id)
+@validate_with(EspecialidadMapping)
+def actualizar(especialidad, id):
+    especialidad = EspecialidadService.actualizar_especialidad(especialidad, id)
+    if especialidad is None:
+        return jsonify({"error": "Especialidad no encontrada"}), 404
     return jsonify("Especialidad actualizada exitosamente"), 200        
 
 
