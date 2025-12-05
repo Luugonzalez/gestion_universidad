@@ -1,8 +1,4 @@
 version: '3.8'
-<<<<<<< HEAD
-
-=======
->>>>>>> 8a76927e9b716969803efe8f017c23545cfe6d1e
 services:
   estructura:
     image: gestion_academica
@@ -25,14 +21,11 @@ services:
       - HASHIDS_ALPHABET=${HASHIDS_ALPHABET}
       - HASHIDS_SALT=${HASHIDS_SALT}
       - SECRET_KEY=${SECRET_KEY}
-<<<<<<< HEAD
 
     env_file:
       - .env
 
-=======
       - .env
->>>>>>> 8a76927e9b716969803efe8f017c23545cfe6d1e
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`backend.universidad.localhost`)"
