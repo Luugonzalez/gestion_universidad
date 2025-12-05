@@ -109,3 +109,9 @@ class UniversidadResourceTestCase(unittest.TestCase):
 
         self.assertEqual(len(content), 1)
         self.assertEqual(content[0]["nombre"], "UTN")
+<<<<<<< HEAD
+=======
+
+if __name__ == '__main__':
+    unittest.main()
+>>>>>>> 8a76927e9b716969803efe8f017c23545cfe6d1e
