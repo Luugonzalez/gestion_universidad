@@ -84,6 +84,8 @@ Se realizaron tests de carga sobre los endpoints `/universidad`, `/especialidad`
 Todos los requests fueron exitosos (100% de éxito, sin errores de servidor). Los tiempos promedio de respuesta estuvieron alrededor de 0.87 a 0.91 segundos, mientras que los tiempos máximos alcanzaron entre 2.7 y 3.0 segundos.  
 La simulación mostró un comportamiento consistente bajo la carga, con todos los endpoints respondiendo correctamente y sin fallos.
 
+---
+
 **Integrantes:**
 
 Aguilera Sebastián
