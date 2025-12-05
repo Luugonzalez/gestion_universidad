@@ -7,8 +7,9 @@ services:
     restart: always
     networks:
       - mired
-    ports:
-      - "5000:5000"
+    #ports:
+    #  - "5000:5000"
+
     environment:
       - FLASK_CONTEXT=production
       - SQLALCHEMY_TRACK_MODIFICATIONS=${SQLALCHEMY_TRACK_MODIFICATIONS}
@@ -36,12 +37,10 @@ services:
       - "traefik.http.middlewares.doc-service.circuitbreaker.expression=ResponseCodeRatio(500,600,0,600) > 0.25"
       - "traefik.http.middlewares.doc-service.circuitbreaker.expression=LatencyAtQuantileMS(95) > 1000"
       - "traefik.http.routers.doc-service.middlewares=doc-service@docker"
-
-      #- "traefik.http.routers.backend.entrypoints=websecure"
-      # Retry middleware
-      #- "traefik.http.middlewares.backend-retry.retry.attempts=3"
-      #- "traefik.http.middlewares.backend-retry.retry.initialinterval=100ms"
-      #- "traefik.http.routers.backend.middlewares=backend-retry"
+      - "traefik.http.routers.backend.entrypoints=https"
+      - "traefik.http.middlewares.backend-retry.retry.attempts=3"
+      - "traefik.http.middlewares.backend-retry.retry.initialinterval=100ms"
+      - "traefik.http.routers.backend.middlewares=backend-retry"
 
 networks:
   mired:

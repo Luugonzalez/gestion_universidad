@@ -1,10 +1,11 @@
-Proyecto de Microservicio de Gestión Academica 
+Proyecto de Microservicio de Gestión Academica
 
 **Descripción**
 
 Microservicio desarrollado en Flask para la gestión académica de la universidad. Proporciona APIs REST para administrar universidades, facultades y especialidades con persistencia en base de datos SQL y caché en Redis. Permite crear, editar, consultar y eliminar información sobre universidades, facultades y programas de estudio de manera rápida y eficiente.
 
 **Características principales:**
+
 - Acceso mediante una interfaz simple basada en solicitudes HTTP
 - Los datos se guardan en una base de datos segura y confiable
 - El sistema recuerda consultas frecuentes para ser más rápido
@@ -12,6 +13,7 @@ Microservicio desarrollado en Flask para la gestión académica de la universida
 - Compatible con múltiples universidades simultáneamente
 
 **Requisitos previos**
+
 - Python 3.12 o superior
 - PostgreSQL instalado y funcionando
 - Redis instalado (para caché)
@@ -29,7 +31,7 @@ Microservicio desarrollado en Flask para la gestión académica de la universida
 
 **Dependencias Principales**
 Flask==3.0.2
-flask-marshmallow==0.15.0 
+flask-marshmallow==0.15.0
 werkzeug>=3.0.1
 Flask-SQLAlchemy==3.1.1
 SQLAlchemy==2.0.40
@@ -62,4 +64,18 @@ Choquevillca Celeste
 
 Guzmán Dana
 
+**Endpoints:**
+https://backend.universidad.localhost/api/v1/universidad
+https://backend.universidad.localhost/api/v1/facultad
+https://backend.universidad.localhost/api/v1/especialidad
 
+**Migracion DB:**
+
+1. flask db init
+2. flask db migrate -m "migracion"
+3. flask db upgrade
+
+**Configuracion Traefik:**
+Entrypoint seguro "https"
+
+### Antes de ejecutar configurar archivos .env
