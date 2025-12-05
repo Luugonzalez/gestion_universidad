@@ -33,6 +33,8 @@ def format_filters_for_sqlalchemy(filters_dict: Dict[str, Any]) -> List:
 @cache.cached(timeout=60)
 def buscar_por_hashid(id):
     universidad = UniversidadService.buscar_universidad(id)
+    if universidad is None:
+        return jsonify({"error": "Universidad no encontrada"}), 404
     return universidad_mapping.dump(universidad), 200
 
 
@@ -79,7 +81,7 @@ def crear(universidad):
     return jsonify("Universidad creada exitosamente"), 201 
 
 @universidad_bp.route('/universidad/<hashid:id>', methods=['PUT'])
-@validate_with(UniversidadMapping) #validar acciones con marshmallow, validate_with en carpeta validators
+@validate_with(UniversidadMapping)
 def actualizar(universidad, id):
     UniversidadService.actualizar_universidad(universidad, id)
     return jsonify("Universidad actualizada exitosamente"), 200 
@@ -91,11 +93,11 @@ def borrar_por_hashid(id):
 
 
 def sanitizar_universidad_entrada(request):
-  universidad = universidad_mapping.load(request.get_json())
-  universidad.nombre = escape(universidad.nombre)
-  universidad.sigla = escape(universidad.sigla)
-  universidad.tipo = escape(universidad.tipo) 
-  return universidad
+    universidad = universidad_mapping.load(request.get_json())
+    universidad.nombre = escape(universidad.nombre)
+    universidad.sigla = escape(universidad.sigla)
+    universidad.tipo = escape(universidad.tipo) 
+    return universidad
 
 
 
