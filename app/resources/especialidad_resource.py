@@ -72,7 +72,7 @@ def crear(especialidad):
 
 @especialidad_bp.route('/especialidad/<hashid:id>', methods=['PUT'])
 @validate_with(EspecialidadMapping)
-def actualizar(id):
+def actualizar(especialidad, id):
     especialidad = especialidad_mapping.load(request.get_json())
     especialidad = sanitizar_especialidad_entrada(especialidad)
     EspecialidadService.actualizar_especialidad(especialidad, id)
