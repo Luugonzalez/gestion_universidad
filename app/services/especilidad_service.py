@@ -32,14 +32,15 @@ class EspecialidadService:
 
     @staticmethod
     @retry(max_attempts=3, delay=1.0)
-    def buscar_especialidad(id: int):
+    def buscar_especialidad(id: int) -> Especialidad| None:
         especialidad = EspecialidadRepository.buscar_especialidad(id)
         return especialidad
 
     @staticmethod
     @retry(max_attempts=3, delay=1.0)
-    def actualizar_especialidad(especialidad: Especialidad, id: int):
-        EspecialidadRepository.actualizar_especialidad(especialidad, id)
+    def actualizar_especialidad(especialidad: Especialidad, id: int) -> Especialidad| None:
+        return EspecialidadRepository.actualizar_especialidad(especialidad, id)
+        
 
     @staticmethod
     @retry(max_attempts=3, delay=1.0)

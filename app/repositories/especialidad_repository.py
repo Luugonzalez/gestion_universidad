@@ -26,7 +26,7 @@ class EspecialidadRepository:
         return query.scalar() or 0
 
     @staticmethod
-    def crear_especialidad(especialidad: Especialidad):
+    def crear_especialidad(especialidad: Especialidad) -> Especialidad:
         db.session.add(especialidad)
         db.session.commit()
         return especialidad 
@@ -36,7 +36,7 @@ class EspecialidadRepository:
         return db.session.query(Especialidad).filter(Especialidad.id == id).one_or_none()
 
     @staticmethod
-    def actualizar_especialidad(especialidad: Especialidad, id: int) -> Especialidad:
+    def actualizar_especialidad(especialidad: Especialidad, id: int) -> Especialidad| None:
         entity = EspecialidadRepository.buscar_especialidad(id)
         if not entity:
             return None  
