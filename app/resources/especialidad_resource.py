@@ -3,6 +3,9 @@ from app.mapping.especialidad_mapping import EspecialidadMapping
 from app.services.especilidad_service import EspecialidadService
 from app.models.especialidad import Especialidad
 from markupsafe import escape
+from app.validators import validate_with
+from app import cache
+
 import json
 import logging
 
@@ -52,13 +55,15 @@ def listar_especialidades():
 
 
 @especialidad_bp.route('/especialidad/<hashid:id>', methods=['GET'])
+@cache.cached(timeout=60)
 def buscar_por_hashid(id):
     especialidad = EspecialidadService.buscar_especialidad(id)
     return especialidad_mapping.dump(especialidad), 200 
 
 
 @especialidad_bp.route('/especialidad', methods=['POST'])
-def crear():
+@validate_with(EspecialidadMapping)
+def crear(especialidad):
     especialidad = especialidad_mapping.load(request.get_json())
     especialidad = sanitizar_especialidad_entrada(especialidad)
     EspecialidadService.crear_especialidad(especialidad)
@@ -66,6 +71,7 @@ def crear():
 
 
 @especialidad_bp.route('/especialidad/<hashid:id>', methods=['PUT'])
+@validate_with(EspecialidadMapping)
 def actualizar(id):
     especialidad = especialidad_mapping.load(request.get_json())
     especialidad = sanitizar_especialidad_entrada(especialidad)
