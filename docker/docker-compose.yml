@@ -1,8 +1,7 @@
+version: '3.8'
 services:
   estructura:
     image: gestion_academica
-    #deploy:
-    #  replicas: 5
     container_name: app_gestion
     restart: always
     networks:
@@ -22,6 +21,7 @@ services:
       - HASHIDS_ALPHABET=${HASHIDS_ALPHABET}
       - HASHIDS_SALT=${HASHIDS_SALT}
       - SECRET_KEY=${SECRET_KEY}
+      - .env
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`backend.universidad.localhost`)"
