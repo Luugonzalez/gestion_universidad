@@ -2,10 +2,10 @@ Proyecto de Microservicio de Gestión Academica
 
 **Descripción**
 
-Microservicio desarrollado en Flask para la gestión académica de la universidad. Proporciona APIs REST para administrar universidades, facultades y especialidades con persistencia en base de datos SQL y caché en Redis. Permite crear, editar, consultar y eliminar información sobre universidades, facultades y programas de estudio de manera rápida y eficiente.
+Microservicio desarrollado en Flask para la gestión académica de la universidad. Proporciona APIs REST para administrar universidades, facultades y especialidades con persistencia en base de datos SQL y caché en Redis. Permite crear, editar, consultar y eliminar información sobre universidades, facultades y especialidades  de manera rápida y eficiente.
 
 **Características principales:**
-- Acceso mediante una interfaz simple basada en solicitudes HTTP
+- Acceso mediante una interfaz simple basada en solicitudes HTTP y HTTPS(Permitido por Traefick)
 - Los datos se guardan en una base de datos segura y confiable
 - El sistema recuerda consultas frecuentes para ser más rápido
 - Búsquedas y filtros avanzados para encontrar la información necesaria
@@ -16,6 +16,36 @@ Microservicio desarrollado en Flask para la gestión académica de la universida
 - PostgreSQL instalado y funcionando
 - Redis instalado (para caché)
 - pip (gestor de paquetes de Python)
+
+**Antes de ejecutar:**
+- Crea el archivo `.env` en la raíz del proyecto
+- PostgreSQL debe estar corriendo
+- Redis debe estar corriendo (si usas caché)
+- Instala dependencias: `pip install -r requirements.txt`
+- Ejecuta migraciones: `flask db upgrade`
+
+**Cómo ejecutar la aplicación**
+
+Tenemos 3 opciones:
+
+1. **Ejecución local (Desarrollo)**
+   ```bash
+   python app.py
+   ```
+   La aplicación estará en `http://localhost:5000`
+
+2. **Con Docker Compose (Recomendado)**
+   ```bash
+   cd docker
+   docker-compose up -d
+   ```
+3. **Con Flask en modo debug**
+   ```bash
+   set FLASK_APP=app.py
+   set FLASK_ENV=development
+   flask run
+   ```
+
 
 **Estructura del proyecto**
 
