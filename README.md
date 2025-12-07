@@ -1,10 +1,10 @@
-Proyecto de Microservicio de Gestión Academica
+#Proyecto de Microservicio de Gestión Academica
 
-**Descripción**
+## **Descripción**
 
 Microservicio desarrollado en Flask para la gestión académica de la universidad. Proporciona APIs REST para administrar universidades, facultades y especialidades con persistencia en base de datos SQL y caché en Redis. Permite crear, editar, consultar y eliminar información sobre universidades, facultades y especialidades de manera rápida y eficiente.
 
-**Características principales:**
+## **Características principales:**
 
 - Acceso mediante una interfaz simple basada en solicitudes HTTP y HTTPS(Permitido por Traefick)
 - Los datos se guardan en una base de datos segura y confiable
@@ -12,14 +12,14 @@ Microservicio desarrollado en Flask para la gestión académica de la universida
 - Búsquedas y filtros avanzados para encontrar la información necesaria
 - Compatible con múltiples universidades simultáneamente
 
-**Requisitos previos**
+## **Requisitos previos**
 
 - Python 3.12 o superior
 - PostgreSQL instalado y funcionando
 - Redis instalado (para caché)
 - pip (gestor de paquetes de Python)
 
-**Antes de ejecutar:**
+## **Antes de ejecutar:**
 
 - Crea el archivo `.env` en la raíz del proyecto
 - PostgreSQL debe estar corriendo
@@ -27,7 +27,7 @@ Microservicio desarrollado en Flask para la gestión académica de la universida
 - Instala dependencias: `pip install -r requirements.txt`
 - Ejecuta migraciones: `flask db upgrade`
 
-**Cómo ejecutar la aplicación**
+##**Cómo ejecutar la aplicación**
 
 Tenemos 3 opciones:
 
@@ -54,7 +54,7 @@ Tenemos 3 opciones:
    flask run
    ```
 
-**Estructura del proyecto**
+## **Estructura del proyecto**
 
 - `app/` - Código principal de la aplicación
 - `app/models/` - Modelos de datos (Universidad, Facultad, Especialidad)
@@ -64,7 +64,7 @@ Tenemos 3 opciones:
 - `test/` - Tests unitarios e integración
 - `migrations/` - Migraciones de base de datos
 
-**Dependencias Principales**
+## **Dependencias Principales**
 Flask==3.0.2
 flask-marshmallow==0.15.0
 werkzeug>=3.0.1
