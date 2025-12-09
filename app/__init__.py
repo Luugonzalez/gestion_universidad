@@ -6,12 +6,15 @@ from app.config import config
 from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
 from flask_caching import Cache
+from redis import Redis
+import pickle 
 
 db = SQLAlchemy()
 migrate = Migrate()
 ma = Marshmallow()
 cache = Cache()
 
+redis_client = None 
 
 def create_app() -> Flask:
     """
@@ -30,8 +33,14 @@ def create_app() -> Flask:
     migrate.init_app(app, db)
     ma.init_app(app)
     cache.init_app(app)
-    #jwt.init_app(app)
-
+    global redis_client
+    redis_client = Redis(
+            host=app.config['CACHE_REDIS_HOST'],
+            port=app.config['CACHE_REDIS_PORT'],
+            db=app.config['CACHE_REDIS_DB'],
+            password=app.config['CACHE_REDIS_PASSWORD'],
+            decode_responses=False  # importante para pickle
+        )
     from app.resources import home, universidad_bp, facultad_bp, especialidad_bp
     
     app.register_blueprint(home, url_prefix="/api/v1")
