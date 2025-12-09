@@ -4,6 +4,9 @@ from sqlalchemy_filters import apply_filters
 import logging
 from typing import Optional, List
 
+from app import redis_client
+import json
+
 class EspecialidadRepository:
     @staticmethod
     def listar_especialidades(page: int, per_page: int, filters: Optional[list] = None) -> list[Especialidad]:
@@ -33,7 +36,26 @@ class EspecialidadRepository:
 
     @staticmethod
     def buscar_especialidad(id: int) -> Especialidad:
-        return db.session.query(Especialidad).filter(Especialidad.id == id).one_or_none()
+        key = f"especialidad: {id}"
+        cached = redis_client.get(key)
+        if cached:
+            return json.loads(cached)
+        
+        especialidad = db.session.query(Especialidad).filter(Especialidad.id == id).one_or_none()
+        
+        if not especialidad:
+            return None
+        
+        data = {
+            "id": especialidad.id,
+            "nombre": especialidad.nombre,
+            "letra": especialidad.letra,
+            "observacion": especialidad.observacion,
+            "facultad_id": especialidad.facultad_id
+        }
+        
+        redis_client.set(key, json.dumps(data))
+        return data
 
     @staticmethod
     def actualizar_especialidad(especialidad: Especialidad, id: int) -> Especialidad| None:
