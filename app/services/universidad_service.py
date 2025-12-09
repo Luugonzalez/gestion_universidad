@@ -42,4 +42,4 @@ class UniversidadService:
 
     @staticmethod
     def eliminar_universidad(universidad_id: int) -> Optional[Universidad]:
-        return UniversidadRepository.eliminar_universidad(universidad_id)
+        return UniversidadRepository.eliminar_universidad(universidad_id) 
