@@ -3,7 +3,7 @@ from markupsafe import escape
 from app.models.especialidad import Especialidad
 
 class EspecialidadMapping(Schema):
-    hashids = fields.String(attribute="hashid", dump_only=True)
+    id = fields.Int(dump_only=True)
     nombre = fields.Str(required=True, validate=validate.Length(min=1, max=100))
     letra = fields.Str(required=True, validate=validate.Length(min=1, max=100))
     observacion = fields.Str(required=True, validate=validate.Length(min=1, max=100))
