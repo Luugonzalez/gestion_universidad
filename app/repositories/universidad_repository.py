@@ -70,7 +70,6 @@ class UniversidadRepository:
         if not uni:
             return None
 
-      
         data = {
             "id": uni.id,
             "nombre": uni.nombre,
