@@ -1,17 +1,12 @@
-version: "3.8"
-
 services:
   estructura:
     image: gestion_academica
-    container_name: app_gestion
     restart: always
     networks:
-      - mired
-    #ports:
-    #  - "5000:5000"
-
+      mired:
+        aliases:
+          - academica.universidad.localhost
     environment:
-      - FLASK_CONTEXT=production
       - SQLALCHEMY_TRACK_MODIFICATIONS=${SQLALCHEMY_TRACK_MODIFICATIONS}
       - SQLALCHEMY_RECORD_QUERIES=${SQLALCHEMY_RECORD_QUERIES}
       - PROD_DATABASE_URI=${PROD_DATABASE_URI}
@@ -21,7 +16,6 @@ services:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - HASHIDS_MIN_LENGTH=${HASHIDS_MIN_LENGTH}
       - HASHIDS_ALPHABET=${HASHIDS_ALPHABET}
-      - HASHIDS_SALT=${HASHIDS_SALT}
       - SECRET_KEY=${SECRET_KEY}
 
     env_file:
@@ -29,19 +23,25 @@ services:
 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`backend.universidad.localhost`)"
-      - "traefik.http.routers.backend.tls=true"
-      - "traefik.http.services.backend.loadbalancer.server.port=5000"
-      - "traefik.docker.network=mired"
-      - "traefik.http.middlewares.documento-service.circuitbreaker.expression=NetworkErrorRatio() > 0.5"
-      - "traefik.http.middlewares.doc-service.circuitbreaker.expression=ResponseCodeRatio(500,600,0,600) > 0.25"
-      - "traefik.http.middlewares.doc-service.circuitbreaker.expression=LatencyAtQuantileMS(95) > 1000"
-      - "traefik.http.routers.doc-service.middlewares=doc-service@docker"
-      - "traefik.http.routers.backend.entrypoints=https"
-      - "traefik.http.middlewares.backend-retry.retry.attempts=3"
-      - "traefik.http.middlewares.backend-retry.retry.initialinterval=100ms"
-      - "traefik.http.routers.backend.middlewares=backend-retry"
 
+      # Router
+      - "traefik.http.routers.academica-service.rule=Host(`academica.universidad.localhost`)"
+      - "traefik.http.routers.academica-service.entrypoints=websecure"
+      - "traefik.http.routers.academica-service.tls=true"
+      - "traefik.http.services.academica-service.loadbalancer.server.port=5000"
+
+      # Middlewares por separado
+      - "traefik.http.middlewares.acad-cb.circuitbreaker.expression=LatencyAtQuantileMS(50.0) > 100"
+      - "traefik.http.middlewares.acad-cb.circuitbreaker.expression=ResponseCodeRatio(500,600,0,600) > 0.25"
+      - "traefik.http.middlewares.acad-cb.circuitbreaker.expression=NetworkErrorRatio() > 0.5"
+
+      - "traefik.http.middlewares.acad-retry.retry.attempts=4"
+      - "traefik.http.middlewares.acad-retry.retry.initialinterval=100ms"
+
+      # Asignar los middlewares al router
+      - "traefik.http.routers.academica-service.middlewares=acad-cb,acad-retry"
+
+      - "traefik.docker.network=mired"
 networks:
   mired:
     external: true
