@@ -8,7 +8,6 @@ dependencies = [
     "flask==3.0.2",
     "flask-caching==2.1.0",
     "flask-filter==0.1.2a3",
-    "flask-hashids==1.0.3",
     "flask-marshmallow==0.15.0",
     "flask-migrate==4.1.0",
     "flask-sqlalchemy==3.1.1",

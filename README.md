@@ -75,7 +75,6 @@ python-dotenv==1.0.1
 Flask-Migrate==4.1.0
 marshmallow==3.20.0
 markupsafe==3.0.2
-Flask-Hashids == 1.0.3
 sqlalchemy-filters == 0.13.0
 Flask-Filter == 0.1.2a3
 requests==2.31.0
