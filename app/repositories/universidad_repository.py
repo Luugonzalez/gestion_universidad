@@ -1,8 +1,11 @@
+import json
+from app import redis_client
 from app.models import Universidad
 from app import db
 from sqlalchemy_filters import apply_filters
 import logging
 from typing import Optional, List
+
 
 class UniversidadRepository:
 
@@ -56,8 +59,28 @@ class UniversidadRepository:
     return paginated_query.all()
   
   @staticmethod
-  def buscar_universidad(id: int) -> Universidad:
-    return Universidad.query.get(id)
+  def buscar_universidad(universidad_id: int):
+        key = f"universidad:{universidad_id}"
+        cached = redis_client.get(key)
+        if cached:
+            data = json.loads(cached)
+            return Universidad(**data)   
+
+        uni = Universidad.query.get(universidad_id)
+        if not uni:
+            return None
+
+      
+        data = {
+            "id": uni.id,
+            "nombre": uni.nombre,
+            "letra": uni.letra,
+            "facultad_id": uni.facultad_id,
+            "observacion": uni.observacion,
+        }
+
+        redis_client.set(key, json.dumps(data), ex=60)
+        return uni
   
   @staticmethod
   def actualizar_universidad(universidad: Universidad, id: int) -> Universidad:
