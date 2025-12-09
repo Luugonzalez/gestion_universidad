@@ -1,0 +1,25 @@
+[project]
+name = "gestion-universidad"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "flask==3.0.2",
+    "flask-caching==2.1.0",
+    "flask-filter==0.1.2a3",
+    "flask-hashids==1.0.3",
+    "flask-marshmallow==0.15.0",
+    "flask-migrate==4.1.0",
+    "flask-sqlalchemy==3.1.1",
+    "markupsafe==3.0.2",
+    "marshmallow==3.20.0",
+    "psycopg2-binary==2.9.10",
+    "python-dotenv==1.0.1",
+    "redis==5.0.3",
+    "requests==2.31.0",
+    "sqlalchemy==2.0.40",
+    "sqlalchemy-filters==0.13.0",
+    "tenacity==8.2.3",
+    "werkzeug>=3.1.4",
+]
