@@ -55,9 +55,9 @@ def listar_facultades():
     }
     return jsonify(response), 200
     
-@facultad_bp.route('/facultad/<hashid:id>', methods=['GET']) 
+@facultad_bp.route('/facultad/<int:id>', methods=['GET'])
 @cache.cached(timeout=60)
-def buscar_por_hashid(id):
+def buscar_por_id(id):
     facultad = FacultadService.buscar_facultad(id)
     if facultad is None:
         return jsonify({"error": "Facultad no encontrada"}), 404
@@ -69,14 +69,16 @@ def crear(facultad):
     FacultadService.crear_facultad(facultad)
     return jsonify("Facultad creada exitosamente"), 201 
 
-@facultad_bp.route('/facultad/<hashid:id>', methods=['PUT']) 
+@facultad_bp.route('/facultad/<int:id>', methods=['PUT'])
 @validate_with(FacultadMapping)
 def actualizar(facultad, id):
-    FacultadService.actualizar_facultad(facultad, id)
-    return jsonify("Facultad actualizada exitosamente"), 200 
+    facultad_actualizada = FacultadService.actualizar_facultad(facultad, id)
+    if facultad_actualizada is None:
+        return jsonify({"error": "Facultad no encontrada"}), 404
+    return jsonify("Facultad actualizada exitosamente"), 200
 
-@facultad_bp.route('/facultad/<hashid:id>', methods=['DELETE'])
-def borrar_por_hashid(id):
+@facultad_bp.route('/facultad/<int:id>', methods=['DELETE'])
+def borrar_por_id(id):
     FacultadService.eliminar_facultad(id)
     return jsonify("Facultad borrada exitosamente"), 200 
 
@@ -84,17 +86,7 @@ def sanitizar_facultad_entrada(facultad):
     facultad.nombre = escape(facultad.nombre)
     facultad.sigla = escape(facultad.sigla) 
     return facultad 
-    facultad.nombre = escape(facultad.nombre)
-    facultad.sigla = escape(facultad.sigla)
-    facultad.codigoPostal = escape(facultad.codigoPostal)
-    facultad.abreviatura = escape(facultad.abreviatura)
-    facultad.directorio = escape(facultad.directorio)
-    facultad.ciudad = escape(facultad.ciudad)
-    facultad.domicilio = escape(facultad.domicilio)
-    facultad.telefono = escape(facultad.telefono)
-    facultad.contacto = escape(facultad.contacto)
-    facultad.email = escape(facultad.email)
-    return facultad
+    
 
 
 

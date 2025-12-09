@@ -54,9 +54,9 @@ def listar_especialidades():
     return jsonify(response), 200
 
 
-@especialidad_bp.route('/especialidad/<hashid:id>', methods=['GET'])
+@especialidad_bp.route('/especialidad/<int:id>', methods=['GET'])
 @cache.cached(timeout=60)
-def buscar_por_hashid(id):
+def buscar_por_id(id):
     especialidad = EspecialidadService.buscar_especialidad(id)
     if especialidad is None:
         return jsonify({"error": "Especialidad no encontrada"}), 404
@@ -70,7 +70,7 @@ def crear(especialidad):
     return jsonify("Especialidad creada exitosamente"), 201
 
 
-@especialidad_bp.route('/especialidad/<hashid:id>', methods=['PUT'])
+@especialidad_bp.route('/especialidad/<int:id>', methods=['PUT'])
 @validate_with(EspecialidadMapping)
 def actualizar(especialidad, id):
     especialidad = EspecialidadService.actualizar_especialidad(especialidad, id)
@@ -79,8 +79,8 @@ def actualizar(especialidad, id):
     return jsonify("Especialidad actualizada exitosamente"), 200        
 
 
-@especialidad_bp.route('/especialidad/<hashid:id>', methods=['DELETE'])
-def borrar_por_hashid(id):
+@especialidad_bp.route('/especialidad/<int:id>', methods=['DELETE'])
+def borrar_por_id(id):
     EspecialidadService.eliminar_especialidad(id)
     return jsonify("Especialidad borrada exitosamente"), 200    
 

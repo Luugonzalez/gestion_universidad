@@ -29,9 +29,9 @@ def format_filters_for_sqlalchemy(filters_dict: Dict[str, Any]) -> List:
             })
     return filters_list
 
-@universidad_bp.route('/universidad/<hashid:id>', methods=['GET'])
+@universidad_bp.route('/universidad/<int:id>', methods=['GET'])
 @cache.cached(timeout=60)
-def buscar_por_hashid(id):
+def buscar_por_id(id):
     universidad = UniversidadService.buscar_universidad(id)
     if universidad is None:
         return jsonify({"error": "Universidad no encontrada"}), 404
@@ -80,14 +80,16 @@ def crear(universidad):
     UniversidadService.crear_universidad(universidad)
     return jsonify("Universidad creada exitosamente"), 201 
 
-@universidad_bp.route('/universidad/<hashid:id>', methods=['PUT'])
+@universidad_bp.route('/universidad/<int:id>', methods=['PUT'])
 @validate_with(UniversidadMapping)
 def actualizar(universidad, id):
-    UniversidadService.actualizar_universidad(universidad, id)
-    return jsonify("Universidad actualizada exitosamente"), 200 
+    objeto = UniversidadService.actualizar_universidad(universidad, id)
+    if objeto is None:
+        return jsonify({"error": "Universidad no encontrada"}), 404
+    return jsonify("Universidad actualizada exitosamente"), 200
 
-@universidad_bp.route('/universidad/<hashid:id>', methods=['DELETE'])
-def borrar_por_hashid(id):
+@universidad_bp.route('/universidad/<int:id>', methods=['DELETE'])
+def borrar_por_id(id):
     UniversidadService.eliminar_universidad(id)
     return jsonify("Universidad borrada exitosamente"), 200 
 
