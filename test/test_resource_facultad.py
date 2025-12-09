@@ -1,7 +1,6 @@
 import unittest
 import os
 import json
-from hashids import Hashids
 from app import db, create_app
 from app.models import Facultad, Universidad
 
@@ -23,10 +22,6 @@ class FacultadResourceTestCase(unittest.TestCase):
         self.app_context.push()
         db.create_all()
         self.client = self.app.test_client()
-
-        salt = self.app.config.get('HASHIDS_SALT', 'facultades')
-        min_length = self.app.config.get('HASHIDS_MIN_LENGTH', 10)
-        self.hashids = Hashids(min_length=min_length, salt=salt)
 
         # Crear universidad primero
         self.universidad = Universidad(nombre="Universidad Test", sigla="UT", tipo="Nacional")
@@ -63,9 +58,6 @@ class FacultadResourceTestCase(unittest.TestCase):
         db.session.add_all([self.fac1, self.fac2])
         db.session.commit()
 
-        self.fac1_hash = self.hashids.encode(self.fac1.id)
-        self.fac2_hash = self.hashids.encode(self.fac2.id)
-
     def tearDown(self):
         db.session.remove()
         db.drop_all()
@@ -80,8 +72,8 @@ class FacultadResourceTestCase(unittest.TestCase):
         self.assertIsInstance(data["content"], list)
         self.assertGreaterEqual(len(data["content"]), 2)
 
-    def test_buscar_por_hashid(self):
-        response = self.client.get(f'/api/v1/facultad/{self.fac1_hash}')
+    def test_buscar_por_id(self):
+        response = self.client.get(f'/api/v1/facultad/{self.fac1.id}')
         self.assertEqual(response.status_code, 200)
 
         data = response.get_json()
@@ -123,14 +115,14 @@ class FacultadResourceTestCase(unittest.TestCase):
             "universidad_id": self.universidad.id
         }
 
-        response = self.client.put(f'/api/v1/facultad/{self.fac1_hash}', json=payload)
+        response = self.client.put(f'/api/v1/facultad/{self.fac1.id}', json=payload)
         self.assertEqual(response.status_code, 200)
 
         refreshed = Facultad.query.get(self.fac1.id)
         self.assertEqual(refreshed.nombre, "Facultad de Ingeniería Actualizada")
 
     def test_borrar_facultad(self):
-        response = self.client.delete(f'/api/v1/facultad/{self.fac2_hash}')
+        response = self.client.delete(f'/api/v1/facultad/{self.fac2.id}')
         self.assertEqual(response.status_code, 200)
 
         deleted = Facultad.query.get(self.fac2.id)

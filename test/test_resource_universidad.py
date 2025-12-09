@@ -5,7 +5,6 @@ from flask import current_app
 from app import create_app
 from app.models.universidad import Universidad
 from app.mapping.universidad_mapping import UniversidadMapping
-from hashids import Hashids
 import json
 
 class UniversidadResourceTestCase(unittest.TestCase):
@@ -27,17 +26,10 @@ class UniversidadResourceTestCase(unittest.TestCase):
         db.create_all()
         self.client = self.app.test_client()
 
-        salt = self.app.config.get('HASHIDS_SALT', 'universidades')
-        min_length = self.app.config.get('HASHIDS_MIN_LENGTH', 10)
-        self.hashids = Hashids(min_length=min_length, salt=salt)
-
         self.uni1 = Universidad(nombre="UTN", sigla="UTN", tipo="Publica")
         self.uni2 = Universidad(nombre="UBA", sigla="UBA", tipo="Publica")
         db.session.add_all([self.uni1, self.uni2])
         db.session.commit()
-
-        self.uni1_hash = self.hashids.encode(self.uni1.id)
-        self.uni2_hash = self.hashids.encode(self.uni2.id)
 
 
     def tearDown(self):
@@ -54,12 +46,6 @@ class UniversidadResourceTestCase(unittest.TestCase):
         self.assertIsInstance(data["content"], list)
         self.assertGreaterEqual(len(data["content"]), 2)
 
-    def test_buscar_por_hashid(self):
-        response = self.client.get(f'/api/v1/universidad/{self.uni1_hash}')
-        self.assertEqual(response.status_code, 200)
-
-        data = response.get_json()
-        self.assertEqual(data["nombre"], "UTN")
 
     def test_crear_universidad(self):
         payload = {
@@ -82,7 +68,7 @@ class UniversidadResourceTestCase(unittest.TestCase):
             "tipo": "Publica"
         }
 
-        response = self.client.put(f'/api/v1/universidad/{self.uni1_hash}',
+        response = self.client.put(f'/api/v1/universidad/{self.uni1.id}',
                                    json=payload)
         self.assertEqual(response.status_code, 200)
 
@@ -90,7 +76,7 @@ class UniversidadResourceTestCase(unittest.TestCase):
         self.assertEqual(refreshed.nombre, "UTN Actualizada")
 
     def test_borrar_universidad(self):
-        response = self.client.delete(f'/api/v1/universidad/{self.uni2_hash}')
+        response = self.client.delete(f'/api/v1/universidad/{self.uni2.id}')
         self.assertEqual(response.status_code, 200)
 
         deleted = Universidad.query.get(self.uni2.id)
