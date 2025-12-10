@@ -61,10 +61,11 @@ class UniversidadRepository:
   @staticmethod
   def buscar_universidad(universidad_id: int):
         key = f"universidad:{universidad_id}"
-        cached = redis_client.get(key)
-        if cached:
-            data = json.loads(cached)
-            return Universidad(**data)   
+        if redis_client is not None:
+            cached = redis_client.get(key)
+            if cached:
+                data = json.loads(cached)
+                return Universidad(**data)   
 
         uni = Universidad.query.get(universidad_id)
         if not uni:
@@ -73,9 +74,8 @@ class UniversidadRepository:
         data = {
             "id": uni.id,
             "nombre": uni.nombre,
-            "letra": uni.letra,
-            "facultad_id": uni.facultad_id,
-            "observacion": uni.observacion,
+            "sigla": uni.sigla,
+            "tipo": uni.observacion,
         }
 
         redis_client.set(key, json.dumps(data), ex=60)
