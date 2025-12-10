@@ -39,7 +39,7 @@ def create_app() -> Flask:
             port=app.config['CACHE_REDIS_PORT'],
             db=app.config['CACHE_REDIS_DB'],
             password=app.config['CACHE_REDIS_PASSWORD'],
-            decode_responses=False  # importante para pickle
+            decode_responses=False  
         )
     from app.resources import home, universidad_bp, facultad_bp, especialidad_bp
     
