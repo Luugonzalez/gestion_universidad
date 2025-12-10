@@ -24,7 +24,7 @@ services:
 
       # Router
       - "traefik.http.routers.academica-service.rule=Host(`academica.universidad.localhost`)"
-      - "traefik.http.routers.academica-service.entrypoints=https"
+      - "traefik.http.routers.academica-service.entrypoints=websecure"
       - "traefik.http.routers.academica-service.tls=true"
       - "traefik.http.services.academica-service.loadbalancer.server.port=5000"
 

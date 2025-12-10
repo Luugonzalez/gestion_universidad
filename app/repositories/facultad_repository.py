@@ -28,37 +28,35 @@ class FacultadRepository:
 
       logging.info(f"[CACHE] Buscando clave en Redis: {key}")
 
-      cached = redis_client.get(key)
-      if cached:
-          logging.info(f"[CACHE HIT] Facultad {id} encontrada en Redis")
-          return json.loads(cached)
+      if redis_client is not None:
+          cached = redis_client.get(key)
+          if cached:
+              data = json.loads(cached)
+              logging.info(f"[CACHE HIT] Facultad {id} encontrada en Redis.")
+              return Facultad(**data)
 
       logging.info(f"[CACHE MISS] No se encontró la facultad {id} en Redis. Consultando DB...")
 
       facultad = db.session.query(Facultad).filter(Facultad.id == id).one_or_none()
       if not facultad:
-          logging.warning(f"[DB] No existe la facultad con id {id}")
           return None
-
-      data = {
-          "id": facultad.id,
-          "nombre": facultad.nombre,
-          "abreviatura": facultad.abreviatura,
-          "directorio": facultad.directorio,
-          "sigla": facultad.sigla,
-          "codigoPostal": facultad.codigoPostal,
-          "ciudad": facultad.ciudad,
-          "domicilio": facultad.domicilio,
-          "telefono": facultad.telefono,
-          "contacto": facultad.contacto,
-          "email": facultad.email
-      }
-
-      # Guardar en Redis con expiración opcional (ej: 6 horas)
-      redis_client.set(key, json.dumps(data), ex=100)
-      logging.info(f"[CACHE SET] Facultad {id} almacenada en Redis con TTL de 6 horas")
-
-      return data
+       
+      if redis_client is not None:
+          data = {
+              "id": facultad.id,
+              "nombre": facultad.nombre,
+              "abreviatura": facultad.abreviatura,
+              "directorio": facultad.directorio,
+              "sigla": facultad.sigla,
+              "codigoPostal": facultad.codigoPostal,
+              "ciudad": facultad.ciudad,
+              "domicilio": facultad.domicilio,
+              "telefono": facultad.telefono,
+              "contacto": facultad.contacto,
+              "email": facultad.email
+          }
+          redis_client.set(key, json.dumps(data)) 
+      return facultad
     
   @staticmethod
   def actualizar_facultad(facultad: Facultad, id: int) -> Facultad:

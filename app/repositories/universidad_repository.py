@@ -70,15 +70,15 @@ class UniversidadRepository:
         uni = Universidad.query.get(universidad_id)
         if not uni:
             return None
+        if redis_client is not None:
 
-        data = {
-            "id": uni.id,
-            "nombre": uni.nombre,
-            "sigla": uni.sigla,
-            "tipo": uni.observacion,
-        }
-
-        redis_client.set(key, json.dumps(data), ex=60)
+            data = {
+                "id": uni.id,
+                "nombre": uni.nombre,
+                "sigla": uni.sigla,
+                "tipo": uni.observacion,
+            }
+            redis_client.set(key, json.dumps(data), ex=60)
         return uni
   
   @staticmethod
