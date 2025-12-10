@@ -5,7 +5,6 @@ from flask import current_app
 from app import create_app
 from app.models.facultad import Facultad
 from app.models.especialidad import Especialidad
-from hashids import Hashids
 import json
 
 class EspecialidadResourceTestCase(unittest.TestCase):
@@ -25,10 +24,6 @@ class EspecialidadResourceTestCase(unittest.TestCase):
         self.app_context.push()
         db.create_all()
         self.client = self.app.test_client()
-
-        salt = self.app.config.get('HASHIDS_SALT', 'especialidades')
-        min_length = self.app.config.get('HASHIDS_MIN_LENGTH', 10)
-        self.hashids = Hashids(min_length=min_length, salt=salt)
 
         self.facultad = Facultad(
             nombre="Ingeniería",
@@ -61,9 +56,6 @@ class EspecialidadResourceTestCase(unittest.TestCase):
         db.session.add_all([self.esp1, self.esp2])
         db.session.commit()
 
-        self.esp1_hash = self.hashids.encode(self.esp1.id)
-        self.esp2_hash = self.hashids.encode(self.esp2.id)
-
     def tearDown(self):
         db.session.remove()
         db.drop_all()
@@ -78,8 +70,8 @@ class EspecialidadResourceTestCase(unittest.TestCase):
         self.assertIn("content", data)
         self.assertGreaterEqual(len(data["content"]), 2)
 
-    def test_get_by_hashid(self):
-        response = self.client.get(f'/api/v1/especialidad/{self.esp1_hash}')
+    def test_get_by_id(self):
+        response = self.client.get(f'/api/v1/especialidad/{self.esp1.id}')
         self.assertEqual(response.status_code, 200)
 
         data = response.get_json()
@@ -108,7 +100,7 @@ class EspecialidadResourceTestCase(unittest.TestCase):
         }
 
         response = self.client.put(
-            f'/api/v1/especialidad/{self.esp1_hash}',
+            f'/api/v1/especialidad/{self.esp1.id}',
             json=payload
         )
         self.assertEqual(response.status_code, 200)
@@ -117,7 +109,7 @@ class EspecialidadResourceTestCase(unittest.TestCase):
         self.assertEqual(refreshed.letra, "A1")
 
     def test_delete(self):
-        response = self.client.delete(f'/api/v1/especialidad/{self.esp2_hash}')
+        response = self.client.delete(f'/api/v1/especialidad/{self.esp2.id}')
         self.assertEqual(response.status_code, 200)
 
         deleted = Especialidad.query.get(self.esp2.id)

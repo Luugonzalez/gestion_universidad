@@ -3,6 +3,9 @@ from app import db
 from sqlalchemy_filters import apply_filters
 from typing import Optional
 
+from app import redis_client
+import json
+
 class FacultadRepository:
 
   @staticmethod
@@ -21,8 +24,32 @@ class FacultadRepository:
   
   @staticmethod
   def buscar_facultad(id: int) -> Facultad:
-    return db.session.query(Facultad).filter(Facultad.id == id).one_or_none()
-  
+    key = f"facultad: {id}"
+    cached = redis_client.get(key)
+    if cached:
+        return json.loads(cached)
+      
+    facultad = db.session.query(Facultad).filter(Facultad.id == id).one_or_none()
+    if not facultad:
+        return None
+      
+    data = {
+        "id": facultad.id,
+        "nombre": facultad.nombre,  
+        "abreviatura": facultad.abreviatura,
+        "directorio": facultad.directorio,
+        "sigla": facultad.sigla,
+        "codigoPostal": facultad.codigoPostal,
+        "ciudad": facultad.ciudad,
+        "domicilio": facultad.domicilio,
+        "telefono": facultad.telefono,
+        "contacto": facultad.contacto,
+        "email": facultad.email
+    }
+    redis_client.set(key, json.dumps(data))
+    
+    return data
+    
   @staticmethod
   def actualizar_facultad(facultad: Facultad, id: int) -> Facultad:
     entity = FacultadRepository.buscar_facultad(id)

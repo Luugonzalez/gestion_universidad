@@ -1,5 +1,14 @@
 #Entorno virtual
 venv/
+.venv/
+
+# uv
+.uv/
+=3.0.1
+
+
+# python version file
+.python-version
 
 #Variables de entorno
 .env

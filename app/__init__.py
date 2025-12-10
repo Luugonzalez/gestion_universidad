@@ -5,15 +5,16 @@ from flask_sqlalchemy import SQLAlchemy
 from app.config import config
 from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
-from flask_hashids import Hashids
 from flask_caching import Cache
+from redis import Redis
+import pickle 
 
 db = SQLAlchemy()
 migrate = Migrate()
 ma = Marshmallow()
-hashids = Hashids()
 cache = Cache()
 
+redis_client = None 
 
 def create_app() -> Flask:
     """
@@ -30,11 +31,16 @@ def create_app() -> Flask:
     
     db.init_app(app)
     migrate.init_app(app, db)
-    hashids.init_app(app)
     ma.init_app(app)
     cache.init_app(app)
-    #jwt.init_app(app)
-
+    global redis_client
+    redis_client = Redis(
+            host=app.config['CACHE_REDIS_HOST'],
+            port=app.config['CACHE_REDIS_PORT'],
+            db=app.config['CACHE_REDIS_DB'],
+            password=app.config['CACHE_REDIS_PASSWORD'],
+            decode_responses=False  
+        )
     from app.resources import home, universidad_bp, facultad_bp, especialidad_bp
     
     app.register_blueprint(home, url_prefix="/api/v1")

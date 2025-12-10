@@ -1,27 +1,38 @@
-FROM python:3.12-bookworm
+FROM python:3.12-slim AS builder
 
-ENV FLASK_CONTEXT=production
 ENV PYTHONUNBUFFERED=1
-ENV PATH=$PATH:/home/sysacad/.local/bin
+ENV PATH=/root/.local/bin:$PATH
+WORKDIR /app
 
-RUN useradd --create-home --home-dir /home/sysacad sysacad
-RUN apt-get update
-RUN apt-get install -y python3-dev build-essential libpq-dev python3-psycopg2
-RUN apt-get install -y curl htop iputils-ping
-RUN apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false
-RUN rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends ca-certificates curl \
+ && curl -LsSf https://astral.sh/uv/install.sh | sh \
+ && apt-get purge -y curl \
+ && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /home/sysacad
-
-USER sysacad
-RUN mkdir app
+COPY pyproject.toml uv.lock ./
+# Crea .venv (predeterminado de uv) y sincroniza deps usando Python 3.12 del sistema
+RUN uv sync --no-dev
 
 COPY ./app ./app
 COPY ./app.py .
 
-ADD requirements.txt ./requirements.txt
+FROM python:3.12-slim AS runtime
 
-RUN pip install --no-cache-dir -r requirements.txt
+ENV FLASK_CONTEXT=production
+ENV PYTHONUNBUFFERED=1
+ENV VIRTUAL_ENV=/opt/venv
+ENV PATH=$VIRTUAL_ENV/bin:$PATH
+
+WORKDIR /home/sysacad
+RUN useradd --create-home --home-dir /home/sysacad sysacad
+
+# Copiar el entorno creado en .venv (builder) a /opt/venv (runtime)
+COPY --from=builder /app/.venv /opt/venv
+COPY --from=builder /app/app ./app
+COPY --from=builder /app/app.py .
+
+USER sysacad
 
 EXPOSE 5000
 

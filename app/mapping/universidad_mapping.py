@@ -4,7 +4,7 @@ from markupsafe import escape
 
 
 class UniversidadMapping(Schema):
-    hashids = fields.String(attribute="hashid", dump_only=True)
+    id = fields.Int(dump_only=True)
     nombre = fields.String(required=True, validate = validate.Length(min=1, max=100)) #max de la base de datos
     sigla = fields.String(required=True, validate = validate.Length(min=1, max=10))
     tipo = fields.Str(required=True) 
