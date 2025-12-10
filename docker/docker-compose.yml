@@ -1,6 +1,6 @@
 services:
   academica-service:
-    image: gestion_academica
+    image: gestion_academica:v1.0.0
     restart: always
     networks:
       mired:
